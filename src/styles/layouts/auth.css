@@ -55,11 +55,8 @@
 
 .auth-brand img {
   width: auto;
-  height: 104px;
-  padding: 0.8rem 1rem;
-  border-radius: var(--radio-lg);
-  background: #ffffff;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  height: 120px;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
 }
 
 .auth-card {
@@ -146,7 +143,7 @@
   }
 
   .auth-brand img {
-    height: 84px;
+    height: 96px;
   }
 
   .auth-card {
