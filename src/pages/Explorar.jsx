@@ -1,19 +1,20 @@
 import { useMemo, useState } from 'react'
 import ArticleCard from '../components/cards/ArticleCard'
-import { items } from '../data/items'
+import { useItems } from '../hooks/useItems'
 
 function Explorar() {
+  const { items, cargando, error } = useItems()
   const [busqueda, setBusqueda] = useState('')
 
   const filtrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase()
     if (!texto) return items
-    return items.filter(
-      (item) =>
-        item.titulo.toLowerCase().includes(texto) ||
-        item.categoria.toLowerCase().includes(texto),
+    return items.filter((item) =>
+      [item.titulo, item.categoria, item.descripcion, item.ubicacion]
+        .filter(Boolean)
+        .some((valor) => String(valor).toLowerCase().includes(texto)),
     )
-  }, [busqueda])
+  }, [items, busqueda])
 
   return (
     <div className="container page">
@@ -24,14 +25,18 @@ function Explorar() {
       <input
         type="search"
         className="input search"
-        placeholder="Buscar por título o categoría"
+        placeholder="Buscar por título, categoría o ubicación"
         value={busqueda}
         onChange={(evento) => setBusqueda(evento.target.value)}
       />
 
-      {filtrados.length === 0 ? (
+      {cargando && <p className="empty">Cargando artículos…</p>}
+      {!cargando && error && <p className="empty">{error}</p>}
+      {!cargando && !error && filtrados.length === 0 && (
         <p className="empty">No se encontraron artículos.</p>
-      ) : (
+      )}
+
+      {!cargando && !error && filtrados.length > 0 && (
         <div className="grid">
           {filtrados.map((item) => (
             <ArticleCard key={item.id} item={item} />

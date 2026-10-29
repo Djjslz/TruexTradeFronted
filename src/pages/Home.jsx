@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import ArticleCard from '../components/cards/ArticleCard'
-import { items } from '../data/items'
+import { useItems } from '../hooks/useItems'
 
 function Home() {
+  const { items, cargando, error } = useItems()
+
   return (
     <div className="container page">
       <section className="hero">
@@ -27,11 +29,20 @@ function Home() {
           <h2>Trueques recientes</h2>
           <Link to="/explorar">Ver todos</Link>
         </div>
-        <div className="grid">
-          {items.map((item) => (
-            <ArticleCard key={item.id} item={item} />
-          ))}
-        </div>
+
+        {cargando && <p className="empty">Cargando trueques…</p>}
+        {!cargando && error && <p className="empty">{error}</p>}
+        {!cargando && !error && items.length === 0 && (
+          <p className="empty">Aún no hay publicaciones. ¡Sé el primero en publicar!</p>
+        )}
+
+        {!cargando && !error && items.length > 0 && (
+          <div className="grid">
+            {items.map((item) => (
+              <ArticleCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )

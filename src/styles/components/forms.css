@@ -49,6 +49,106 @@ textarea.input {
   align-self: flex-start;
 }
 
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.upload-drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 1.5rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radio-md);
+  background: var(--bg-alt);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transicion), background-color var(--transicion);
+}
+
+.upload-drop:hover,
+.upload-drop.is-dragging {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.upload-drop strong {
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.upload-drop span {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.upload-drop.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.upload-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radio-sm);
+  background: var(--bg-alt);
+}
+
+.upload-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-remove {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.upload-remove:hover {
+  background: var(--danger);
+}
+
+@media (max-width: 560px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .field {
   display: flex;
   flex-direction: column;
