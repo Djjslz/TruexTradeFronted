@@ -49,12 +49,6 @@ textarea.input {
   align-self: flex-start;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
 .upload-drop {
   position: relative;
   display: flex;
@@ -141,12 +135,6 @@ textarea.input {
 
 .upload-remove:hover {
   background: var(--danger);
-}
-
-@media (max-width: 560px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .field {

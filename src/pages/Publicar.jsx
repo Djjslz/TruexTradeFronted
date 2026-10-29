@@ -7,11 +7,6 @@ import { procesarImagen } from '../utils/images'
 const MAX_IMAGENES = 4
 const CATEGORIAS = ['Deportes', 'Música', 'Hogar', 'Libros', 'Tecnología', 'Moda', 'Otros']
 const ESTADOS = ['Nuevo', 'Excelente estado', 'Buen estado', 'Con detalles']
-const TIPOS = [
-  { valor: 'trueque', etiqueta: 'Solo trueque' },
-  { valor: 'venta', etiqueta: 'Solo venta' },
-  { valor: 'ambos', etiqueta: 'Trueque o venta' },
-]
 
 function Publicar() {
   const { user, token } = useAuth()
@@ -21,8 +16,6 @@ function Publicar() {
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [estado, setEstado] = useState('')
-  const [tipo, setTipo] = useState('trueque')
-  const [precio, setPrecio] = useState('')
   const [ubicacion, setUbicacion] = useState(user?.ubicacion ?? '')
   const [imagenes, setImagenes] = useState([])
   const [arrastrando, setArrastrando] = useState(false)
@@ -103,9 +96,6 @@ function Publicar() {
       nuevos.descripcion = 'La descripción debe tener entre 10 y 600 caracteres.'
     }
     if (!estado) nuevos.estado = 'Selecciona el estado del artículo.'
-    if (tipo !== 'trueque' && !(Number(precio) > 0)) {
-      nuevos.precio = 'Indica un precio mayor que cero.'
-    }
     if (ubicacion.trim().length < 2) {
       nuevos.ubicacion = 'Indica tu ciudad o región.'
     }
@@ -130,8 +120,6 @@ function Publicar() {
           descripcion: descripcion.trim(),
           categoria,
           estado,
-          tipo,
-          precio: tipo === 'trueque' ? null : Number(precio),
           ubicacion: ubicacion.trim(),
           imagenes,
           usuario: {
@@ -233,77 +221,31 @@ function Publicar() {
           )}
         </div>
 
-        <div className="form-grid">
-          <div className="field">
-            <label className="field-label" htmlFor="publicar-estado">
-              Estado
-            </label>
-            <select
-              id="publicar-estado"
-              className={`input ${errores.estado ? 'input-error' : ''}`.trim()}
-              value={estado}
-              onChange={(evento) => {
-                setEstado(evento.target.value)
-                limpiarError('estado')
-              }}
-              aria-invalid={Boolean(errores.estado)}
-            >
-              <option value="" disabled>
-                Selecciona el estado
+        <div className="field">
+          <label className="field-label" htmlFor="publicar-estado">
+            Estado
+          </label>
+          <select
+            id="publicar-estado"
+            className={`input ${errores.estado ? 'input-error' : ''}`.trim()}
+            value={estado}
+            onChange={(evento) => {
+              setEstado(evento.target.value)
+              limpiarError('estado')
+            }}
+            aria-invalid={Boolean(errores.estado)}
+          >
+            <option value="" disabled>
+              Selecciona el estado
+            </option>
+            {ESTADOS.map((opcion) => (
+              <option key={opcion} value={opcion}>
+                {opcion}
               </option>
-              {ESTADOS.map((opcion) => (
-                <option key={opcion} value={opcion}>
-                  {opcion}
-                </option>
-              ))}
-            </select>
-            {errores.estado && <span className="field-error">{errores.estado}</span>}
-          </div>
-
-          <div className="field">
-            <label className="field-label" htmlFor="publicar-tipo">
-              Modalidad
-            </label>
-            <select
-              id="publicar-tipo"
-              className="input"
-              value={tipo}
-              onChange={(evento) => {
-                setTipo(evento.target.value)
-                limpiarError('precio')
-              }}
-            >
-              {TIPOS.map((opcion) => (
-                <option key={opcion.valor} value={opcion.valor}>
-                  {opcion.etiqueta}
-                </option>
-              ))}
-            </select>
-          </div>
+            ))}
+          </select>
+          {errores.estado && <span className="field-error">{errores.estado}</span>}
         </div>
-
-        {tipo !== 'trueque' && (
-          <div className="field">
-            <label className="field-label" htmlFor="publicar-precio">
-              Precio (COP)
-            </label>
-            <input
-              id="publicar-precio"
-              type="number"
-              min="0"
-              step="1000"
-              className={`input ${errores.precio ? 'input-error' : ''}`.trim()}
-              placeholder="Ej. 150000"
-              value={precio}
-              onChange={(evento) => {
-                setPrecio(evento.target.value)
-                limpiarError('precio')
-              }}
-              aria-invalid={Boolean(errores.precio)}
-            />
-            {errores.precio && <span className="field-error">{errores.precio}</span>}
-          </div>
-        )}
 
         <div className="field">
           <label className="field-label" htmlFor="publicar-ubicacion">

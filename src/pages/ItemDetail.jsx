@@ -2,18 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getItemById } from '../services/api'
 
-const ETIQUETAS_TIPO = {
-  trueque: 'Trueque',
-  venta: 'Venta',
-  ambos: 'Trueque o venta',
-}
-
-const formatoPrecio = new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0,
-})
-
 function ItemDetail() {
   const { id } = useParams()
   const [item, setItem] = useState(null)
@@ -78,7 +66,6 @@ function ItemDetail() {
 
   const imagenes = Array.isArray(item.imagenes) ? item.imagenes : []
   const usuario = item.usuario?.nombre ?? item.usuario ?? 'Usuario'
-  const tienePrecio = Number(item.precio) > 0
 
   return (
     <div className="container page">
@@ -94,26 +81,11 @@ function ItemDetail() {
         <div className="detail-body">
           <div className="detail-badges">
             <span className="badge">{item.categoria}</span>
-            {item.tipo && (
-              <span
-                className={`badge ${
-                  item.tipo === 'venta'
-                    ? 'badge-venta'
-                    : item.tipo === 'ambos'
-                      ? 'badge-ambos'
-                      : ''
-                }`.trim()}
-              >
-                {ETIQUETAS_TIPO[item.tipo] ?? item.tipo}
-              </span>
-            )}
             {item.estado && <span className="badge badge-neutral">{item.estado}</span>}
           </div>
 
           <h1>{item.titulo}</h1>
           <p>{item.descripcion}</p>
-
-          {tienePrecio && <p className="detail-price">{formatoPrecio.format(item.precio)}</p>}
 
           <p className="detail-user">
             Publicado por {usuario}

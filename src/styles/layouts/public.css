@@ -75,14 +75,6 @@
   flex-wrap: wrap;
 }
 
-.detail-price {
-  margin-bottom: 0.5rem;
-  color: var(--primary);
-  font-family: var(--fuente-logo);
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-
 .detail-thumbs {
   display: flex;
   gap: 0.5rem;
