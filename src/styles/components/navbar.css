@@ -23,7 +23,7 @@
 }
 
 .brand img {
-  height: 57.5px;
+  height: 72px;
   width: auto;
 }
 
@@ -69,8 +69,16 @@
 }
 
 .nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--text-muted);
   font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.nav-user:hover {
+  color: var(--primary);
 }
 
 @media (max-width: 768px) {
@@ -79,7 +87,7 @@
   }
 
   .brand img {
-    height: 47.5px;
+    height: 58px;
   }
 
   .nav-links {

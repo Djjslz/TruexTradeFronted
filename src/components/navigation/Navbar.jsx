@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import ThemeToggle from '../common/ThemeToggle'
+import Avatar from '../common/Avatar'
 import logo from '../../assets/logos/logo-horizontal.png'
 
 function Navbar() {
@@ -26,7 +27,10 @@ function Navbar() {
           <ThemeToggle />
           {user ? (
             <>
-              <span className="nav-user">Hola, {user.nombre}</span>
+              <Link to="/perfil" className="nav-user">
+                <Avatar nombre={user.nombre} src={user.avatar} size={30} />
+                <span>{user.nombre}</span>
+              </Link>
               <button type="button" className="btn btn-ghost" onClick={logout}>
                 Salir
               </button>
