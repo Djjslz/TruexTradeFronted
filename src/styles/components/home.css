@@ -4,6 +4,7 @@
   overflow: hidden;
   background: var(--hero-fondo);
   border: 1px solid var(--border);
+  padding: 2.5rem;
 }
 
 .hero-grid {
@@ -11,6 +12,18 @@
   grid-template-columns: 1fr;
   gap: 2.5rem;
   align-items: center;
+}
+
+@media (min-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+#categorias,
+#como-funciona,
+#comunidad {
+  scroll-margin-top: 7rem;
 }
 
 .hero-content h1 {
@@ -118,32 +131,6 @@
   letter-spacing: 0.04em;
   line-height: 1.2;
   white-space: pre-line;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--border);
-}
-
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.stat strong {
-  font-family: var(--fuente-logo);
-  font-size: 1.4rem;
-  color: var(--primary);
-}
-
-.stat span {
-  color: var(--text-muted);
-  font-size: 0.85rem;
 }
 
 .seccion {
@@ -264,6 +251,8 @@
   height: 150px;
   background: var(--card-media-fondo);
   overflow: hidden;
+  display: grid;
+  place-items: center;
 }
 
 .tarjeta .media img {
@@ -271,6 +260,12 @@
   height: 100%;
   object-fit: cover;
   opacity: 0.92;
+}
+
+.tarjeta .media > svg {
+  width: 56px;
+  height: 56px;
+  color: var(--primary);
 }
 
 .tarjeta .media .icono {
@@ -476,15 +471,14 @@
 }
 
 @media (max-width: 768px) {
+  .hero-home {
+    padding: 1.5rem;
+  }
   .hero-grid {
     gap: 1.5rem;
   }
   .hero-visual {
     height: 200px;
-  }
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
   }
   .como-funciona .pasos {
     grid-template-columns: repeat(2, 1fr);

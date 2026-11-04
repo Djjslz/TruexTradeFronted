@@ -202,7 +202,7 @@ const PASOS = [
 
 function Chip({ item }) {
   return (
-    <Link to={`/explorar?categoria=${item.clave}`} className="chip" key={item.clave}>
+    <Link to={`/explorar?categoria=${item.clave}`} className="chip">
       <div className="icono">{item.icono}</div>
       <span>{item.label}</span>
     </Link>
@@ -212,8 +212,8 @@ function Chip({ item }) {
 function Tarjeta({ p }) {
   const esVenta = p.tipo === 'venta'
   return (
-    <Link to={`/producto/${p.id}`} className="tarjeta" key={p.id} aria-label={p.titulo}>
-      <span className="favorito" aria-label="Favorito">
+    <Link to={`/producto/${p.id}`} className="tarjeta" aria-label={p.titulo}>
+      <span className="favorito" aria-hidden="true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 14 c 1.49 -1.46 3 -3.21 3 -5.5 A 5.5 5.5 0 0 0 16.5 3 c -1.76 0 -3.5 2 -4 5 -0.5 -3 -2.24 -5 -4 -5 -2 0 -3.5 2 -4 5 0 2.29 1.51 4.04 3 5.5 l 0 0 L 12 15 Z" />
         </svg>
@@ -229,7 +229,7 @@ function Tarjeta({ p }) {
         </span>
       </div>
       <div className="meta">
-        <span>📍 Pasta</span>
+        <span>📍 Pasto</span>
       </div>
     </Link>
   )
@@ -250,90 +250,80 @@ function Home() {
   return (
     <div className="container page">
       <section className="hero-home">
-        <div className="container">
-          <div className="hero-grid">
-            <div className="hero-content">
-              <h1>
-                Intercambia lo que ya no usas,{' '}
-                <br />
-                encuentra lo que <strong>sí necesitas.</strong>
-              </h1>
-              <p>
-                TrueX es la plataforma donde las personas conectan, intercambian
-                y dan una nueva vida a sus objetos.
-              </p>
-              <div className="hero-actions">
-                <Link to="/registro" className="btn btn-primary btn-lg">
-                  Comienza ahora <span>→</span>
-                </Link>
-                <Link to="/como-funciona" className="btn btn-outline btn-lg">
-                  Cómo funciona
-                </Link>
-              </div>
+        <div className="hero-grid">
+          <div className="hero-content">
+            <h1>
+              Intercambia lo que ya no usas,
+              <br />
+              encuentra lo que <strong>sí necesitas.</strong>
+            </h1>
+            <p>
+              TrueX es la plataforma donde las personas conectan, intercambian
+              y dan una nueva vida a sus objetos.
+            </p>
+            <div className="hero-actions">
+              <Link to="/registro" className="btn btn-primary btn-lg">
+                Comienza ahora <span>→</span>
+              </Link>
+              <a href="#como-funciona" className="btn btn-outline btn-lg">
+                Cómo funciona
+              </a>
             </div>
-            <div className="hero-visual">
-              <div className="mano">🎮</div>
-              <div className="camara">📷</div>
-              <div className="flechas">
-                <svg width="100%" height="100%" viewBox="0 0 120 120" fill="none" stroke="var(--primary)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.5">
-                  <path d="M 30 60 Q 60 30 90 60" />
-                  <path d="M 90 60 Q 60 90 30 60" />
-                  <path d="M 75 45 L 90 60 L 75 75" />
-                  <path d="M 45 75 L 30 60 L 45 45" />
-                </svg>
-              </div>
-              <div className="manoescrito">Más que objetos,<br />oportunidades</div>
+          </div>
+          <div className="hero-visual">
+            <div className="mano" aria-hidden="true">🎮</div>
+            <div className="camara" aria-hidden="true">📷</div>
+            <div className="flechas" aria-hidden="true">
+              <svg width="100%" height="100%" viewBox="0 0 120 120" fill="none" stroke="var(--primary)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.5">
+                <path d="M 30 60 Q 60 30 90 60" />
+                <path d="M 90 60 Q 60 90 30 60" />
+                <path d="M 75 45 L 90 60 L 75 75" />
+                <path d="M 45 75 L 30 60 L 45 45" />
+              </svg>
             </div>
+            <div className="manoescrito">Más que objetos,<br />oportunidades</div>
           </div>
         </div>
       </section>
 
-      <section className="seccion" aria-label="Categorías">
-        <div className="container">
-          <div className="seccion-header">
-            <h2>Explora por categorías</h2>
-            <Link to="/categorias" className="ver-todas">
-              Ver todas →
-            </Link>
-          </div>
-          <div className="chips">
-            {CATEGORIAS.map((item) => <Chip key={item.clave} item={item} />)}
-          </div>
+      <section className="seccion" id="categorias" aria-label="Categorías">
+        <div className="seccion-header">
+          <h2>Explora por categorías</h2>
+          <Link to="/explorar" className="ver-todas">
+            Ver todas →
+          </Link>
+        </div>
+        <div className="chips">
+          {CATEGORIAS.map((item) => <Chip key={item.clave} item={item} />)}
         </div>
       </section>
 
       <section className="seccion" aria-label="Publicaciones recientes">
-        <div className="container">
-          <div className="seccion-header">
-            <h2>Publicaciones recientes</h2>
-            <Link to="/explorar" className="ver-todas">
-              Ver todas →
-            </Link>
-          </div>
-          <div className="publicaciones">
-            {PUBLICACIONES.map((p) => <Tarjeta key={p.id} p={p} />)}
-          </div>
+        <div className="seccion-header">
+          <h2>Publicaciones recientes</h2>
+          <Link to="/explorar" className="ver-todas">
+            Ver todas →
+          </Link>
+        </div>
+        <div className="publicaciones">
+          {PUBLICACIONES.map((p) => <Tarjeta key={p.id} p={p} />)}
         </div>
       </section>
 
-      <section className="como-funciona" aria-label="Cómo funciona">
-        <div className="container">
-          <div className="conexion"></div>
-          <div className="pasos">
-            {PASOS.map((paso) => <Paso key={paso.num} paso={paso} />)}
-          </div>
+      <section className="como-funciona" id="como-funciona" aria-label="Cómo funciona">
+        <div className="conexion" aria-hidden="true"></div>
+        <div className="pasos">
+          {PASOS.map((paso) => <Paso key={paso.num} paso={paso} />)}
         </div>
       </section>
 
-      <section className="cta-comunidad">
-        <div className="container">
-          <div className="fondo"></div>
-          <h2>Únete a una comunidad que da valor a lo que tiene</h2>
-          <p>TrueX, más que objetos, oportunidades.</p>
-          <button className="btn-cuenta">
-            Crear cuenta gratuita <span>→</span>
-          </button>
-        </div>
+      <section className="cta-comunidad" id="comunidad">
+        <div className="fondo" aria-hidden="true"></div>
+        <h2>Únete a una comunidad que da valor a lo que tiene</h2>
+        <p>TrueX, más que objetos, oportunidades.</p>
+        <Link to="/registro" className="btn-cuenta">
+          Crear cuenta gratuita <span>→</span>
+        </Link>
       </section>
     </div>
   )

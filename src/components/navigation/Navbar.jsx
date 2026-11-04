@@ -19,9 +19,9 @@ function Navbar() {
             Inicio
           </NavLink>
           <NavLink to="/explorar">Explorar</NavLink>
-          <NavLink to="/categorias">Categorías</NavLink>
-          <NavLink to="/como-funciona">Cómo funciona</NavLink>
-          <NavLink to="/comunidad">Comunidad</NavLink>
+          <a href="/#categorias">Categorías</a>
+          <a href="/#como-funciona">Cómo funciona</a>
+          <a href="/#comunidad">Comunidad</a>
         </nav>
 
         <div className="buscador">
