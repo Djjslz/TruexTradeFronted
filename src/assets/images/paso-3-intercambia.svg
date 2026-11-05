@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="Intercambia">
+  <defs>
+    <radialGradient id="bg" cx="26%" cy="24%" r="85%">
+      <stop offset="0" stop-color="#3a2a17" />
+      <stop offset="0.55" stop-color="#1a140d" />
+      <stop offset="1" stop-color="#0b0b0b" />
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e8860c" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#e8860c" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#bg)" />
+  <circle cx="680" cy="640" r="270" fill="url(#glow)" />
+  <text x="72" y="156" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="800" fill="#e8860c" opacity="0.9">03</text>
+  <g fill="none" stroke="#f5f5f5" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M330 400a140 140 0 0 1 240-99" />
+    <path d="M570 520a140 140 0 0 1-240 99" />
+  </g>
+  <g fill="none" stroke="#e8860c" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M588 312l-6 78-78-6" />
+    <path d="M312 608l6-78 78 6" />
+  </g>
+</svg>

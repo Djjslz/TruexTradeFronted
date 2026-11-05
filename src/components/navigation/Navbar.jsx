@@ -5,7 +5,7 @@ import Avatar from '../common/Avatar'
 import logo from '../../assets/logos/logo-horizontal.png'
 
 function Navbar() {
-  const { user, logout } = useAuth()
+  const { user, logout, isAdmin } = useAuth()
 
   return (
     <header className="navbar">
@@ -19,6 +19,7 @@ function Navbar() {
             Inicio
           </NavLink>
           <NavLink to="/explorar">Explorar</NavLink>
+          {isAdmin && <NavLink to="/admin">Panel</NavLink>}
           <a href="/#categorias">Categorías</a>
           <a href="/#como-funciona">Cómo funciona</a>
           <a href="/#comunidad">Comunidad</a>

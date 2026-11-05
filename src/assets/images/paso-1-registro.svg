@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="Regístrate">
+  <defs>
+    <radialGradient id="bg" cx="28%" cy="22%" r="85%">
+      <stop offset="0" stop-color="#3a2a17" />
+      <stop offset="0.55" stop-color="#1a140d" />
+      <stop offset="1" stop-color="#0b0b0b" />
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e8860c" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#e8860c" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#bg)" />
+  <circle cx="700" cy="220" r="270" fill="url(#glow)" />
+  <text x="72" y="156" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="800" fill="#e8860c" opacity="0.9">01</text>
+  <g fill="none" stroke="#f5f5f5" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="420" cy="400" r="82" />
+    <path d="M262 690c0-87 71-158 158-158s158 71 158 158" />
+  </g>
+  <g fill="none" stroke="#e8860c" stroke-width="18" stroke-linecap="round">
+    <circle cx="625" cy="625" r="88" fill="#0d0d0d" />
+    <path d="M625 577v96M577 625h96" />
+  </g>
+</svg>

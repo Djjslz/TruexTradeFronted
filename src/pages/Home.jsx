@@ -1,4 +1,11 @@
 import { Link } from 'react-router-dom'
+import CircularCarousel from '../components/common/CircularCarousel'
+import { useContent } from '../hooks/useContent'
+import { useTheme } from '../hooks/useTheme'
+import pasoRegistro from '../assets/images/paso-1-registro.svg'
+import pasoPublica from '../assets/images/paso-2-publica.svg'
+import pasoIntercambia from '../assets/images/paso-3-intercambia.svg'
+import pasoNuevaVida from '../assets/images/paso-4-nueva-vida.svg'
 
 const ICONOS = {
   laptop: (
@@ -173,30 +180,30 @@ const PUBLICACIONES = [
   },
 ]
 
-const PASOS = [
+const PASOS_CARRUSEL = [
   {
-    num: '1',
-    titulo: 'Regístrate',
-    texto: 'Crea tu cuenta en pocos minutos.',
-    icono: ICONOS.laptop,
+    src: pasoRegistro,
+    alt: 'Persona creando una cuenta',
+    title: '01 · Regístrate',
+    subtitle: 'Crea tu cuenta en pocos minutos.',
   },
   {
-    num: '2',
-    titulo: 'Publica',
-    texto: 'Sube los objetos que ya no usas.',
-    icono: ICONOS.camara,
+    src: pasoPublica,
+    alt: 'Caja con una publicación nueva',
+    title: '02 · Publica',
+    subtitle: 'Sube los objetos que ya no usas.',
   },
   {
-    num: '3',
-    titulo: 'Intercambia',
-    texto: 'Conéctate con personas interesadas.',
-    icono: ICONOS.gamepad,
+    src: pasoIntercambia,
+    alt: 'Flechas de intercambio',
+    title: '03 · Intercambia',
+    subtitle: 'Conéctate con personas interesadas.',
   },
   {
-    num: '4',
-    titulo: 'Dale una nueva vida',
-    texto: 'Tus objetos siguen siendo útiles.',
-    icono: ICONOS.zapatilla,
+    src: pasoNuevaVida,
+    alt: 'Brote de una nueva vida',
+    title: '04 · Dale una nueva vida',
+    subtitle: 'Tus objetos siguen siendo útiles.',
   },
 ]
 
@@ -235,18 +242,11 @@ function Tarjeta({ p }) {
   )
 }
 
-function Paso({ paso }) {
-  return (
-    <div className="paso">
-      <span className="numero">{paso.num}</span>
-      <div className="icono">{paso.icono}</div>
-      <h4>{paso.titulo}</h4>
-      <p>{paso.texto}</p>
-    </div>
-  )
-}
-
 function Home() {
+  const { contenido } = useContent()
+  const { esOscuro } = useTheme()
+  const visual = contenido.inicio.hero.visual
+
   return (
     <div className="container page">
       <section className="hero-home">
@@ -271,8 +271,20 @@ function Home() {
             </div>
           </div>
           <div className="hero-visual">
-            <div className="mano" aria-hidden="true">🎮</div>
-            <div className="camara" aria-hidden="true">📷</div>
+            <div className="mano" aria-hidden="true">
+              {visual.imagenPrincipal ? (
+                <img src={visual.imagenPrincipal} alt="" />
+              ) : (
+                '🎮'
+              )}
+            </div>
+            <div className="camara" aria-hidden="true">
+              {visual.imagenSecundaria ? (
+                <img src={visual.imagenSecundaria} alt="" />
+              ) : (
+                '📷'
+              )}
+            </div>
             <div className="flechas" aria-hidden="true">
               <svg width="100%" height="100%" viewBox="0 0 120 120" fill="none" stroke="var(--primary)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.5">
                 <path d="M 30 60 Q 60 30 90 60" />
@@ -281,7 +293,7 @@ function Home() {
                 <path d="M 45 75 L 30 60 L 45 45" />
               </svg>
             </div>
-            <div className="manoescrito">Más que objetos,<br />oportunidades</div>
+            <div className="manoescrito">{visual.textoManuscrito}</div>
           </div>
         </div>
       </section>
@@ -311,9 +323,29 @@ function Home() {
       </section>
 
       <section className="como-funciona" id="como-funciona" aria-label="Cómo funciona">
-        <div className="conexion" aria-hidden="true"></div>
-        <div className="pasos">
-          {PASOS.map((paso) => <Paso key={paso.num} paso={paso} />)}
+        <div className="seccion-header como-funciona-header">
+          <div>
+            <h2>Cómo funciona</h2>
+            <p className="muted">Cuatro pasos para darle una nueva vida a lo que ya no usas.</p>
+          </div>
+        </div>
+
+        <div className="como-funciona-carousel">
+          <CircularCarousel
+            items={PASOS_CARRUSEL}
+            preset="cylinder"
+            intro="rise"
+            cardWidth={190}
+            gap={36}
+            autoplay="step"
+            interval={3.5}
+            direction="left"
+            captions
+            fadeColor={esOscuro ? '#1e1e1e' : '#ffffff'}
+            depthFade={0.5}
+            innerShade={0.75}
+            cornerRadius={18}
+          />
         </div>
       </section>
 

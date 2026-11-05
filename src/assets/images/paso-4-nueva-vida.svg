@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="Dale una nueva vida">
+  <defs>
+    <radialGradient id="bg" cx="30%" cy="20%" r="85%">
+      <stop offset="0" stop-color="#3a2a17" />
+      <stop offset="0.55" stop-color="#1a140d" />
+      <stop offset="1" stop-color="#0b0b0b" />
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e8860c" stop-opacity="0.3" />
+      <stop offset="1" stop-color="#e8860c" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#bg)" />
+  <circle cx="450" cy="470" r="300" fill="url(#glow)" />
+  <text x="72" y="156" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="800" fill="#e8860c" opacity="0.9">04</text>
+  <g fill="none" stroke="#f5f5f5" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M450 700V470" />
+    <path d="M300 700h300" opacity="0.35" />
+  </g>
+  <path d="M450 545c-108 0-174-71-174-168 108 0 174 71 174 168z" fill="#e8860c" opacity="0.85" />
+  <path d="M450 470c108 0 174-71 174-168-108 0-174 71-174 168z" fill="#fcaf3f" opacity="0.9" />
+</svg>

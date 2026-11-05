@@ -7,6 +7,7 @@ import Explorar from './pages/Explorar'
 import ItemDetail from './pages/ItemDetail'
 import Publicar from './pages/Publicar'
 import Perfil from './pages/Perfil'
+import Admin from './pages/Admin'
 import Login from './pages/auth/Login'
 import Registro from './pages/auth/Registro'
 import NotFound from './pages/NotFound'
@@ -31,6 +32,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Perfil />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute requiereAdmin>
+              <Admin />
             </ProtectedRoute>
           }
         />

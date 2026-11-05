@@ -54,6 +54,10 @@ function normalizarUsuario(usuario = {}) {
     nombre,
     username,
     email,
+    rol:
+      usuario.rol ??
+      usuario.role ??
+      (email === 'demo@truex.app' ? 'admin' : 'usuario'),
     avatar: usuario.avatar ?? usuario.foto ?? '',
     verificado: Boolean(usuario.verificado ?? usuario.verified),
     ubicacion: usuario.ubicacion ?? usuario.location ?? '',
@@ -88,8 +92,18 @@ async function leerError(respuesta, porDefecto) {
 
 async function asegurarDemo() {
   const usuarios = leerUsuarios()
-  if (usuarios.some((usuario) => usuario.email === 'demo@truex.app')) {
-    return usuarios
+  const indiceDemo = usuarios.findIndex(
+    (usuario) => usuario.email === 'demo@truex.app',
+  )
+
+  if (indiceDemo >= 0) {
+    if (usuarios[indiceDemo].rol === 'admin') return usuarios
+
+    const actualizados = usuarios.map((usuario, indice) =>
+      indice === indiceDemo ? { ...usuario, rol: 'admin' } : usuario,
+    )
+    guardarUsuarios(actualizados)
+    return actualizados
   }
 
   const demo = {
@@ -98,6 +112,7 @@ async function asegurarDemo() {
     username: 'davidgx',
     email: 'demo@truex.app',
     claveHash: await hashClave('truex1234'),
+    rol: 'admin',
     avatar: '',
     verificado: true,
     ubicacion: 'Pasto, Nariño',
@@ -129,6 +144,7 @@ async function registrarMock(datos) {
     username: datos.username.trim(),
     email,
     claveHash: await hashClave(datos.clave),
+    rol: 'usuario',
     avatar: '',
     verificado: false,
     ubicacion: datos.ubicacion.trim(),

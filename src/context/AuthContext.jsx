@@ -95,6 +95,7 @@ export function AuthProvider({ children }) {
       token: sesion?.token ?? null,
       cargando,
       isAuthenticated: Boolean(sesion?.user),
+      isAdmin: sesion?.user?.rol === 'admin',
       login,
       register,
       logout,
