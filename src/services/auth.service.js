@@ -1,5 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL
-const usaMock = !API_URL
+const API_URL = (import.meta.env.VITE_API_URL ?? '').trim()
+const usaMock = !API_URL || API_URL.includes('tu-api-en-la-nube')
 const USUARIOS_KEY = 'truex-usuarios'
 
 function leerUsuarios() {

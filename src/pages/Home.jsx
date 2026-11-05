@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useItems } from '../hooks/useItems'
 import CircularCarousel from '../components/common/CircularCarousel'
 import { useContent } from '../hooks/useContent'
 import { useTheme } from '../hooks/useTheme'
@@ -218,6 +219,8 @@ function Chip({ item }) {
 
 function Tarjeta({ p }) {
   const esVenta = p.tipo === 'venta'
+  const imagen = Array.isArray(p.imagenes) ? p.imagenes[0] : p.imagen
+
   return (
     <Link to={`/producto/${p.id}`} className="tarjeta" aria-label={p.titulo}>
       <span className="favorito" aria-hidden="true">
@@ -226,26 +229,46 @@ function Tarjeta({ p }) {
         </svg>
       </span>
       <div className="media">
-        {p.icono}
+        {imagen ? (
+          <img src={imagen} alt={p.titulo} loading="lazy" />
+        ) : (
+          p.icono ?? <span className="icono">{p.categoria}</span>
+        )}
       </div>
       <div className="body">
         <h3>{p.titulo}</h3>
-        <span className="estado">{p.estado}</span>
+        {p.estado && <span className="estado">{p.estado}</span>}
         <span className={`tipo ${esVenta ? 'tipo-venta' : 'tipo-trueque'}`}>
           {esVenta ? 'Venta' : 'Trueque'}
         </span>
       </div>
-      <div className="meta">
-        <span>📍 Pasto</span>
-      </div>
+      {p.ubicacion && (
+        <div className="meta">
+          <span>📍 {p.ubicacion}</span>
+        </div>
+      )}
     </Link>
   )
 }
 
 function Home() {
   const { contenido } = useContent()
+  const { items } = useItems()
   const { esOscuro } = useTheme()
   const visual = contenido.inicio.hero.visual
+
+  const publicaciones = items.length > 0
+    ? items.slice(0, 6).map((item) => ({
+        id: item.id,
+        titulo: item.titulo,
+        estado: item.estado,
+        tipo: item.tipo,
+        categoria: item.categoria,
+        imagenes: item.imagenes,
+        imagen: item.imagen,
+        ubicacion: item.ubicacion,
+      }))
+    : PUBLICACIONES
 
   return (
     <div className="container page">
@@ -318,7 +341,7 @@ function Home() {
           </Link>
         </div>
         <div className="publicaciones">
-          {PUBLICACIONES.map((p) => <Tarjeta key={p.id} p={p} />)}
+          {publicaciones.map((p) => <Tarjeta key={p.id} p={p} />)}
         </div>
       </section>
 
