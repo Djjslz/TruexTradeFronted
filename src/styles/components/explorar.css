@@ -1,0 +1,19 @@
+.explorar-page {
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radio-lg);
+  background: var(--hero-fondo);
+}
+
+.explorar-content {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .explorar-page {
+    padding: 1.5rem 1rem;
+  }
+}

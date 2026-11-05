@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
 import ArticleCard from '../components/cards/ArticleCard'
+import SplashCursor from '../components/common/SplashCursor'
 import { useItems } from '../hooks/useItems'
+import { useTheme } from '../hooks/useTheme'
 
 function Explorar() {
   const { items, cargando, error } = useItems()
+  const { esOscuro } = useTheme()
   const [busqueda, setBusqueda] = useState('')
 
   const filtrados = useMemo(() => {
@@ -18,31 +21,42 @@ function Explorar() {
 
   return (
     <div className="container page">
-      <div className="section-header">
-        <h1>Explorar trueques</h1>
-      </div>
+      <div className="explorar-page">
+        <SplashCursor
+          contained
+          theme={esOscuro ? 'dark' : 'light'}
+          quality="medium"
+          zIndex={0}
+        />
 
-      <input
-        type="search"
-        className="input search"
-        placeholder="Buscar por título, categoría o ubicación"
-        value={busqueda}
-        onChange={(evento) => setBusqueda(evento.target.value)}
-      />
+        <div className="explorar-content">
+          <div className="section-header">
+            <h1>Explorar trueques</h1>
+          </div>
 
-      {cargando && <p className="empty">Cargando artículos…</p>}
-      {!cargando && error && <p className="empty">{error}</p>}
-      {!cargando && !error && filtrados.length === 0 && (
-        <p className="empty">No se encontraron artículos.</p>
-      )}
+          <input
+            type="search"
+            className="input search"
+            placeholder="Buscar por título, categoría o ubicación"
+            value={busqueda}
+            onChange={(evento) => setBusqueda(evento.target.value)}
+          />
 
-      {!cargando && !error && filtrados.length > 0 && (
-        <div className="grid">
-          {filtrados.map((item) => (
-            <ArticleCard key={item.id} item={item} />
-          ))}
+          {cargando && <p className="empty">Cargando artículos…</p>}
+          {!cargando && error && <p className="empty">{error}</p>}
+          {!cargando && !error && filtrados.length === 0 && (
+            <p className="empty">No se encontraron artículos.</p>
+          )}
+
+          {!cargando && !error && filtrados.length > 0 && (
+            <div className="grid">
+              {filtrados.map((item) => (
+                <ArticleCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }
