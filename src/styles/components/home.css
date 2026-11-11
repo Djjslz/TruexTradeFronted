@@ -338,6 +338,7 @@
 
 .como-funciona {
   position: relative;
+  margin-top: 3.5rem;
   border-radius: var(--radio-lg);
   background: var(--surface);
   border: 1px solid var(--border);
