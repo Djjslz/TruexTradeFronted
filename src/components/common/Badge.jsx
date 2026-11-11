@@ -1,7 +1,5 @@
 const VARIANTES = {
   trueque: 'badge',
-  venta: 'badge badge-venta',
-  ambos: 'badge badge-ambos',
   neutral: 'badge badge-neutral',
 }
 

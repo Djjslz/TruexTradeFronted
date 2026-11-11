@@ -1,10 +1,28 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useItems } from '../hooks/useItems'
+import { eliminarItem } from '../services/api'
 import Avatar from '../components/common/Avatar'
 import StatCard from '../components/common/StatCard'
+import ArticleCard from '../components/cards/ArticleCard'
+
+function esPropietario(item, user) {
+  const autor = item?.usuario
+  if (!autor || typeof autor !== 'object') return false
+  return String(autor.id) === String(user.id)
+}
 
 function Perfil() {
-  const { user, logout } = useAuth()
+  const { user, token, logout } = useAuth()
+  const { items, cargando } = useItems()
+  const [lista, setLista] = useState([])
+  const [error, setError] = useState('')
+  const [eliminando, setEliminando] = useState('')
+
+  useEffect(() => {
+    setLista(items)
+  }, [items])
 
   if (!user) {
     return (
@@ -19,6 +37,26 @@ function Perfil() {
   }
 
   const { stats = {} } = user
+  const misPublicaciones = lista.filter((item) => esPropietario(item, user))
+
+  const handleEliminar = async (item) => {
+    const confirmado = window.confirm(
+      `¿Eliminar "${item.titulo}"? Esta acción no se puede deshacer.`,
+    )
+    if (!confirmado) return
+
+    setEliminando(item.id)
+    setError('')
+
+    try {
+      await eliminarItem(item.id, token)
+      setLista((actuales) => actuales.filter((publicacion) => publicacion.id !== item.id))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setEliminando('')
+    }
+  }
 
   return (
     <div className="container page">
@@ -35,7 +73,7 @@ function Perfil() {
       </section>
 
       <div className="profile-stats">
-        <StatCard valor={stats.publicaciones ?? 0} etiqueta="Publicaciones" />
+        <StatCard valor={misPublicaciones.length} etiqueta="Publicaciones" />
         <StatCard valor={stats.intercambios ?? 0} etiqueta="Intercambios" />
         <StatCard valor={stats.calificacion ?? 0} etiqueta="Calificación" />
       </div>
@@ -51,6 +89,38 @@ function Perfil() {
           Cerrar sesión
         </button>
       </div>
+
+      <section className="section" aria-label="Mis publicaciones">
+        <div className="section-header">
+          <h2>Mis publicaciones</h2>
+        </div>
+
+        {error && (
+          <p className="form-alert" role="alert">
+            {error}
+          </p>
+        )}
+
+        {cargando && <p className="empty">Cargando publicaciones…</p>}
+
+        {!cargando && misPublicaciones.length === 0 && (
+          <p className="empty">
+            Aún no has publicado nada. ¡Publica tu primer artículo!
+          </p>
+        )}
+
+        {misPublicaciones.length > 0 && (
+          <div className="grid">
+            {misPublicaciones.map((item) => (
+              <ArticleCard
+                key={item.id}
+                item={item}
+                onDelete={eliminando ? undefined : handleEliminar}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

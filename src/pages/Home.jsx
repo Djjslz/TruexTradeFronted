@@ -167,7 +167,7 @@ const PUBLICACIONES = [
     id: 5,
     titulo: 'Guitarra Eléctrica',
     estado: 'Bueno estado',
-    tipo: 'venta',
+    tipo: 'trueque',
     categoria: 'Instrumentos',
     icono: ICONOS.guitarra,
   },
@@ -218,7 +218,6 @@ function Chip({ item }) {
 }
 
 function Tarjeta({ p }) {
-  const esVenta = p.tipo === 'venta'
   const imagen = Array.isArray(p.imagenes) ? p.imagenes[0] : p.imagen
 
   return (
@@ -238,9 +237,7 @@ function Tarjeta({ p }) {
       <div className="body">
         <h3>{p.titulo}</h3>
         {p.estado && <span className="estado">{p.estado}</span>}
-        <span className={`tipo ${esVenta ? 'tipo-venta' : 'tipo-trueque'}`}>
-          {esVenta ? 'Venta' : 'Trueque'}
-        </span>
+        <span className="tipo tipo-trueque">Trueque</span>
       </div>
       {p.ubicacion && (
         <div className="meta">

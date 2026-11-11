@@ -1,13 +1,35 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getItemById } from '../services/api'
+import { getItemById, getComentarios, crearComentario } from '../services/api'
+import { useAuth } from '../hooks/useAuth'
+import Avatar from '../components/common/Avatar'
+
+function formatearFecha(valor) {
+  if (!valor) return ''
+  const fecha = new Date(valor)
+  if (Number.isNaN(fecha.getTime())) return ''
+  return fecha.toLocaleString('es-CO', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 function ItemDetail() {
   const { id } = useParams()
+  const { user, token } = useAuth()
   const [item, setItem] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
   const [imagenActiva, setImagenActiva] = useState(0)
+
+  const [comentarios, setComentarios] = useState([])
+  const [cargandoComentarios, setCargandoComentarios] = useState(true)
+  const [texto, setTexto] = useState('')
+  const [enviandoComentario, setEnviandoComentario] = useState(false)
+  const [errorComentario, setErrorComentario] = useState('')
 
   useEffect(() => {
     let activo = true
@@ -32,6 +54,61 @@ function ItemDetail() {
       activo = false
     }
   }, [id])
+
+  useEffect(() => {
+    let activo = true
+
+    setCargandoComentarios(true)
+
+    getComentarios(id)
+      .then((datos) => {
+        if (activo) setComentarios(datos)
+      })
+      .catch(() => {
+        if (activo) setComentarios([])
+      })
+      .finally(() => {
+        if (activo) setCargandoComentarios(false)
+      })
+
+    return () => {
+      activo = false
+    }
+  }, [id])
+
+  const handleComentario = async (evento) => {
+    evento.preventDefault()
+
+    const textoLimpio = texto.trim()
+    if (!textoLimpio) {
+      setErrorComentario('Escribe un comentario.')
+      return
+    }
+    if (!user) {
+      setErrorComentario('Inicia sesión para comentar.')
+      return
+    }
+
+    setEnviandoComentario(true)
+    setErrorComentario('')
+
+    try {
+      const nuevo = await crearComentario(
+        id,
+        {
+          texto: textoLimpio,
+          autor: { id: user.id, nombre: user.nombre, avatar: user.avatar ?? '' },
+        },
+        token,
+      )
+      setComentarios((actuales) => [...actuales, nuevo])
+      setTexto('')
+    } catch (err) {
+      setErrorComentario(err.message)
+    } finally {
+      setEnviandoComentario(false)
+    }
+  }
 
   if (cargando) {
     return (
@@ -113,6 +190,67 @@ function ItemDetail() {
           )}
         </div>
       </div>
+
+      <section className="comentarios" aria-label="Comentarios">
+        <div className="seccion-header">
+          <h2>Comentarios ({comentarios.length})</h2>
+        </div>
+
+        {cargandoComentarios && <p className="muted">Cargando comentarios…</p>}
+
+        {!cargandoComentarios && comentarios.length === 0 && (
+          <p className="muted">Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+        )}
+
+        {!cargandoComentarios && comentarios.length > 0 && (
+          <ul className="comentarios-lista">
+            {comentarios.map((comentario) => (
+              <li className="comentario" key={comentario.id}>
+                <Avatar
+                  nombre={comentario.autor?.nombre ?? 'Usuario'}
+                  src={comentario.autor?.avatar}
+                  size={40}
+                />
+                <div className="comentario-cuerpo">
+                  <div className="comentario-cabecera">
+                    <strong>{comentario.autor?.nombre ?? 'Usuario'}</strong>
+                    <span>{formatearFecha(comentario.createdAt)}</span>
+                  </div>
+                  <p>{comentario.texto}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {user ? (
+          <form className="comentario-form" onSubmit={handleComentario}>
+            <textarea
+              className="input"
+              rows="3"
+              maxLength="500"
+              placeholder="Escribe un comentario…"
+              value={texto}
+              onChange={(evento) => {
+                setTexto(evento.target.value)
+                setErrorComentario('')
+              }}
+            />
+            {errorComentario && <span className="field-error">{errorComentario}</span>}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={enviandoComentario || !texto.trim()}
+            >
+              {enviandoComentario ? 'Enviando…' : 'Comentar'}
+            </button>
+          </form>
+        ) : (
+          <p className="comentario-login">
+            <Link to="/login">Inicia sesión</Link> para dejar un comentario.
+          </p>
+        )}
+      </section>
     </div>
   )
 }

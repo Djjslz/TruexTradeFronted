@@ -62,3 +62,15 @@
   align-self: flex-start;
   margin-top: 0.4rem;
 }
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.card-actions .btn {
+  margin-top: 0;
+}

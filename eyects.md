@@ -342,3 +342,140 @@ npm run preview
 - No se realizaron commits de Git porque `git` no está reconocido en el PATH del sistema.
 - El archivo `agents.md` del proyecto permanece vacío.
 - La carpeta `src/assets/mocups/` se conservó como material de referencia.
+
+---
+
+# Segunda sesión — Recreación de la página principal
+
+> **Fecha de la sesión:** 4 de noviembre de 2026
+> **Asistente:** opencode (modelo deepseek-v4.1-flash-free)
+
+## 10. Análisis y recreación de `principal.jpeg`
+
+**Usuario:**
+
+> quiero que analices la plantilla de la pagina principal llamada principal en esta ruta `...\src\assets\mocups` y recreala tal cual
+
+**Acciones realizadas:**
+
+- Se identificó el mockup `src/assets/mocups/principal.jpeg` (hay además `modo oscuro.jpeg`, logos y `reqfull.md`).
+- Se analizó la imagen y se listaron sus secciones:
+  - **Navbar:** logo TrueX, Inicio, Explorar, Categorías, Cómo funciona, Comunidad, buscador "Buscar productos...", Iniciar sesión / Registrarse.
+  - **Hero:** "Intercambia lo que ya no usas, encuentra lo que sí necesitas.", subtítulo, CTAs "Comienza ahora" / "Cómo funciona", visual de mando ↔ cámara con flechas y texto "Más que objetos, oportunidades".
+  - **Explora por categorías:** chips con iconos (Tecnología, Ropa, Hogar, Deportes, Vehículos, Libros, Instrumentos, Juguetes, Coleccionables, Otros).
+  - **Publicaciones recientes:** 6 tarjetas (Laptop Lenovo, Nike Air Force 1, Cámara Canon, Audífonos Sony, Guitarra Eléctrica, Apple Watch) con estado y badge Trueque/Venta.
+  - **Cómo funciona:** 4 pasos (Regístrate, Publica, Intercambia, Dale una nueva vida).
+  - **CTA final:** "Únete a una comunidad que da valor a lo que tiene" + "Crear cuenta gratuita".
+
+**Archivos modificados/creados:**
+
+- `src/pages/Home.jsx` — reescrita con todas las secciones del mockup.
+- `src/styles/components/home.css` — nuevo archivo de estilos, importado en `src/styles/index.css`.
+- `src/components/navigation/Navbar.jsx` — se añadieron Categorías, Cómo funciona, Comunidad y el buscador.
+- `src/styles/components/navbar.css` — estilos del buscador.
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 11. Omitir el banner de estadísticas
+
+**Usuario:**
+
+> vuelvelo a hacer omite el baner que esta abajo de la navbar donde estan los balances ... como usuarios activos omitelo coge lo demas de la plantilla talcual
+
+**Acciones realizadas:**
+
+- Se eliminó del hero el bloque de estadísticas (`+10K Usuarios activos`, `+25K Objetos publicados`, `+8K Intercambios realizados`, `4.8 Calificación promedio`).
+- Se conservó el resto de la plantilla tal cual.
+- `npm run build` correcto.
+
+---
+
+## 12. Despliegue en local
+
+**Usuario:**
+
+> despliegalo en local [pero con la base de datos de la nube / despliegala en local]
+
+**Acciones realizadas:**
+
+- Se documentó que el frontend decide entre datos mock y API según `VITE_API_URL` (`src/services/api.js`, `src/services/auth.service.js`).
+- Se creó `.env` con la variable `VITE_API_URL`.
+- Se levantó Vite en `http://localhost:5173` (puerto configurado en `vite.config.js`).
+- En la última iteración el servidor se dejó corriendo en segundo plano con `Start-Process`, verificando respuesta HTTP 200.
+- Se explicó que, sin una URL válida de backend, la app usa datos mock en `localStorage`.
+
+**Endpoints que consume el frontend:**
+
+- `GET /items`, `GET /items/:id`, `POST /items` (Bearer token).
+- `POST /auth/register`, `POST /auth/login`, `GET /auth/me` (Bearer token).
+
+---
+
+## 13. Corrección de errores de la plantilla
+
+**Usuario:**
+
+> recorre nuevamente la plantilla y quita algunos errores
+
+**Errores corregidos:**
+
+- Contenedores `.container` anidados que reducían el ancho de las secciones.
+- Hero en una sola columna también en escritorio → se añadió layout de 2 columnas (≥ 900px).
+- Iconos de las tarjetas minúsculos (SVG sin tamaño) → ahora 56px centrados.
+- Enlaces muertos del navbar (`/categorias`, `/como-funciona`, `/comunidad` daban 404) → ahora anclan a secciones con `id`.
+- "Ver todas" de categorías apuntaba a `/categorias` (404) → ahora `/explorar`.
+- Typo "Pasta" → "Pasto".
+- Botón "Crear cuenta gratuita" sin acción → ahora navega a `/registro`.
+- Corazón de favorito interactivo dentro de un `<Link>` → ahora decorativo (`aria-hidden`).
+- Se eliminó CSS `.stats`/`.stat` sin uso y se añadió `scroll-margin-top` para los anclajes.
+
+**Resultado:** `npm run build` correcto y dev respondiendo HTTP 200.
+
+---
+
+## 14. Publicaciones no visibles para todos los usuarios
+
+**Usuario:**
+
+> mi publicaciones no se reflejan a todos los usuarios corrogelo
+
+**Diagnóstico:**
+
+- El proyecto **no tiene backend propio**; en modo mock las publicaciones se guardan en `localStorage` (`truex-items`), por lo que solo las ve el navegador que las creó.
+- `.env` apuntaba a una URL ficticia (`https://tu-api-en-la-nube.com`), lo que rompía las peticiones.
+
+**Acciones realizadas:**
+
+- `src/pages/Home.jsx`: la sección "Publicaciones recientes" ahora usa `useItems()` (datos reales) en lugar del array fijo `PUBLICACIONES`; las tarjetas muestran la imagen real del artículo si existe.
+- `.env`: se dejó `VITE_API_URL=` vacío (con comentarios) para evitar apuntar a una URL inexistente.
+- `src/services/api.js` y `src/services/auth.service.js`: detección robusta de modo mock (tratan el placeholder como local).
+- Servidor de desarrollo reiniciado; `npm run build` correcto y dev HTTP 200.
+
+**Pendiente:**
+
+- El usuario indicó que **ya tiene una API**; falta que proporcione la **URL base** para configurar `VITE_API_URL` y así compartir las publicaciones entre todos los usuarios.
+
+---
+
+## 15. Estado actualizado del proyecto
+
+**Completado en esta etapa:**
+
+- Página principal recreada según `principal.jpeg` (sin el banner de estadísticas).
+- Navbar con buscador y enlaces a secciones.
+- Corrección de errores de layout, iconos y enlaces.
+- Home conectado a las publicaciones reales.
+- Despliegue local funcionando en `http://localhost:5173`.
+- Build de producción correcto.
+
+**Observación de estructura:**
+
+- Durante la sesión aparecieron/actualizaron archivos no creados por este asistente, entre ellos `src/hooks/useContent.js`, `src/components/common/CircularCarousel.jsx` y `src/components/common/SplashCursor.jsx`, además de imágenes `src/assets/images/paso-*.svg`. Conviene revisarlos y documentarlos en una próxima sesión.
+
+**Pendiente:**
+
+- Configurar `VITE_API_URL` con la URL real del backend en la nube.
+- Verificar los endpoints y el formato de respuesta del backend.
+- Confirmar que las publicaciones se comparten entre usuarios/dispositivos.
