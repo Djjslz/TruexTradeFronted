@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import ThemeToggle from '../common/ThemeToggle'
@@ -6,9 +7,47 @@ import logo from '../../assets/logos/logo-horizontal.png'
 
 function Navbar() {
   const { user, logout, isAdmin } = useAuth()
+  const [oculto, setOculto] = useState(false)
+  const ultimoScroll = useRef(0)
+
+  useEffect(() => {
+    const movil = window.matchMedia('(max-width: 860px)')
+
+    const manejarScroll = () => {
+      if (!movil.matches) {
+        setOculto(false)
+        return
+      }
+
+      const actual = window.scrollY
+      const anterior = ultimoScroll.current
+
+      if (actual <= 80) {
+        setOculto(false)
+      } else if (actual > anterior + 4) {
+        setOculto(true)
+      } else if (actual < anterior - 4) {
+        setOculto(false)
+      }
+
+      ultimoScroll.current = actual
+    }
+
+    const manejarResize = () => {
+      if (!movil.matches) setOculto(false)
+    }
+
+    window.addEventListener('scroll', manejarScroll, { passive: true })
+    window.addEventListener('resize', manejarResize)
+
+    return () => {
+      window.removeEventListener('scroll', manejarScroll)
+      window.removeEventListener('resize', manejarResize)
+    }
+  }, [])
 
   return (
-    <header className="navbar">
+    <header className={`navbar ${oculto ? 'is-hidden' : ''}`.trim()}>
       <div className="container navbar-inner">
         <Link to="/" className="brand" aria-label="TrueX Trade, ir al inicio">
           <img src={logo} alt="TrueX Trade" />
