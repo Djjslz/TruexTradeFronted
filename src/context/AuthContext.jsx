@@ -1,5 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import {
+  actualizarPerfil,
+  cambiarClave,
   loginUsuario,
   obtenerPerfil,
   registrarUsuario,
@@ -89,6 +91,24 @@ export function AuthProvider({ children }) {
     setSesion(null)
   }, [])
 
+  const updateProfile = useCallback(
+    async (datos) => {
+      const usuario = await actualizarPerfil(datos, sesion?.token)
+      if (sesion?.token) {
+        const actualizada = { token: sesion.token, user: usuario }
+        guardarSesion(actualizada)
+        setSesion(actualizada)
+      }
+      return usuario
+    },
+    [sesion],
+  )
+
+  const changePassword = useCallback(
+    async (datos) => cambiarClave(datos, sesion?.token),
+    [sesion],
+  )
+
   const value = useMemo(
     () => ({
       user: sesion?.user ?? null,
@@ -99,8 +119,10 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      updateProfile,
+      changePassword,
     }),
-    [sesion, cargando, login, register, logout],
+    [sesion, cargando, login, register, logout, updateProfile, changePassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import Avatar from '../../components/common/Avatar'
+import { procesarAvatar } from '../../utils/images'
 import {
   validarClave,
   validarCorreo,
@@ -16,6 +18,9 @@ function Registro() {
   const [ubicacion, setUbicacion] = useState('')
   const [clave, setClave] = useState('')
   const [confirmarClave, setConfirmarClave] = useState('')
+  const [avatar, setAvatar] = useState('')
+  const [procesandoAvatar, setProcesandoAvatar] = useState(false)
+  const [errorAvatar, setErrorAvatar] = useState('')
   const [acepta, setAcepta] = useState(false)
   const [verClave, setVerClave] = useState(false)
   const [errores, setErrores] = useState({})
@@ -34,9 +39,25 @@ function Registro() {
     setErrorGeneral('')
   }
 
+  const handleAvatar = async (evento) => {
+    const archivo = evento.target.files?.[0]
+    evento.target.value = ''
+    if (!archivo) return
+
+    setErrorAvatar('')
+    setProcesandoAvatar(true)
+
+    try {
+      setAvatar(await procesarAvatar(archivo))
+    } catch (error) {
+      setErrorAvatar(error.message)
+    } finally {
+      setProcesandoAvatar(false)
+    }
+  }
+
   const handleSubmit = async (evento) => {
     evento.preventDefault()
-
     const nuevos = {}
     if (!validarNombre(nombre)) {
       nuevos.nombre = 'Escribe tu nombre (2 a 60 caracteres).'
@@ -63,7 +84,7 @@ function Registro() {
     setErrorGeneral('')
 
     try {
-      await register({ nombre, username, correo, ubicacion, clave })
+      await register({ nombre, username, correo, ubicacion, clave, avatar })
       navigate('/perfil', { replace: true })
     } catch (error) {
       setErrorGeneral(error.message)
@@ -85,6 +106,35 @@ function Registro() {
             {errorGeneral}
           </p>
         )}
+
+        <div className="field">
+          <span className="field-label">Foto de perfil (opcional)</span>
+          <div className="avatar-upload">
+            <Avatar nombre={nombre || 'U'} src={avatar} size={72} />
+            <div className="avatar-upload-actions">
+              <label className="btn btn-outline btn-sm">
+                {procesandoAvatar ? 'Procesando…' : avatar ? 'Cambiar foto' : 'Subir foto'}
+                <input
+                  type="file"
+                  className="sr-only"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleAvatar}
+                  disabled={procesandoAvatar}
+                />
+              </label>
+              {avatar && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => setAvatar('')}
+                >
+                  Quitar
+                </button>
+              )}
+            </div>
+          </div>
+          {errorAvatar && <span className="field-error">{errorAvatar}</span>}
+        </div>
 
         <div className="auth-grid">
           <div className="field">

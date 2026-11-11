@@ -145,7 +145,7 @@ async function registrarMock(datos) {
     email,
     claveHash: await hashClave(datos.clave),
     rol: 'usuario',
-    avatar: '',
+    avatar: datos.avatar ?? '',
     verificado: false,
     ubicacion: datos.ubicacion.trim(),
     stats: { publicaciones: 0, intercambios: 0, calificacion: 0 },
@@ -199,6 +199,7 @@ export async function registrarUsuario(datos) {
       email: datos.correo.trim().toLowerCase(),
       password: datos.clave,
       ubicacion: datos.ubicacion.trim(),
+      avatar: datos.avatar ?? '',
     }),
   })
 
@@ -248,4 +249,162 @@ export async function obtenerPerfil(token) {
   const datos = await respuesta.json()
   const raiz = datos.data ?? datos
   return normalizarUsuario(raiz.user ?? raiz.usuario ?? raiz.perfil ?? raiz)
+}
+
+export async function actualizarPerfil(datos, token) {
+  if (usaMock) {
+    const id = leerIdTokenMock(token)
+    const usuarios = leerUsuarios()
+    const indice = usuarios.findIndex((usuario) => usuario.id === id)
+
+    if (indice < 0) {
+      throw new Error('Tu sesión expiró. Inicia sesión de nuevo.')
+    }
+
+    const username = datos.username?.trim()
+    if (
+      username &&
+      usuarios.some(
+        (usuario, posicion) =>
+          posicion !== indice &&
+          usuario.username.toLowerCase() === username.toLowerCase(),
+      )
+    ) {
+      throw new Error('Ese nombre de usuario ya está en uso.')
+    }
+
+    const actualizado = {
+      ...usuarios[indice],
+      ...(datos.nombre !== undefined ? { nombre: datos.nombre.trim() } : {}),
+      ...(username ? { username } : {}),
+      ...(datos.ubicacion !== undefined ? { ubicacion: datos.ubicacion.trim() } : {}),
+      ...(datos.avatar !== undefined ? { avatar: datos.avatar } : {}),
+    }
+
+    usuarios[indice] = actualizado
+    guardarUsuarios(usuarios)
+    return normalizarUsuario(actualizado)
+  }
+
+  const respuesta = await fetch(`${API_URL}/auth/me`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      nombre: datos.nombre,
+      username: datos.username,
+      ubicacion: datos.ubicacion,
+      avatar: datos.avatar,
+    }),
+  })
+
+  if (!respuesta.ok) {
+    throw new Error(await leerError(respuesta, 'No se pudo actualizar el perfil.'))
+  }
+
+  const datosRespuesta = await respuesta.json()
+  const raiz = datosRespuesta.data ?? datosRespuesta
+  return normalizarUsuario(raiz.user ?? raiz.usuario ?? raiz.perfil ?? raiz)
+}
+
+export async function cambiarClave(datos, token) {
+  if (usaMock) {
+    const id = leerIdTokenMock(token)
+    const usuarios = leerUsuarios()
+    const indice = usuarios.findIndex((usuario) => usuario.id === id)
+
+    if (indice < 0) {
+      throw new Error('Tu sesión expiró. Inicia sesión de nuevo.')
+    }
+
+    const hashActual = await hashClave(datos.actual ?? '')
+    if (usuarios[indice].claveHash !== hashActual) {
+      throw new Error('La contraseña actual no es correcta.')
+    }
+
+    usuarios[indice] = {
+      ...usuarios[indice],
+      claveHash: await hashClave(datos.nueva),
+    }
+    guardarUsuarios(usuarios)
+    return true
+  }
+
+  const respuesta = await fetch(`${API_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      actual: datos.actual,
+      nueva: datos.nueva,
+      currentPassword: datos.actual,
+      newPassword: datos.nueva,
+    }),
+  })
+
+  if (!respuesta.ok) {
+    throw new Error(await leerError(respuesta, 'No se pudo cambiar la contraseña.'))
+  }
+
+  return true
+}
+
+export async function solicitarRecuperacion(correo) {
+  const email = correo.trim().toLowerCase()
+
+  if (usaMock) {
+    await asegurarDemo()
+    if (!leerUsuarios().some((usuario) => usuario.email === email)) {
+      throw new Error('No existe una cuenta con ese correo.')
+    }
+    return true
+  }
+
+  const respuesta = await fetch(`${API_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+
+  if (!respuesta.ok) {
+    throw new Error(await leerError(respuesta, 'No se pudo solicitar la recuperación.'))
+  }
+
+  return true
+}
+
+export async function restablecerClave(datos) {
+  const email = datos.correo.trim().toLowerCase()
+
+  if (usaMock) {
+    const usuarios = leerUsuarios()
+    const indice = usuarios.findIndex((usuario) => usuario.email === email)
+
+    if (indice < 0) {
+      throw new Error('No existe una cuenta con ese correo.')
+    }
+
+    usuarios[indice] = {
+      ...usuarios[indice],
+      claveHash: await hashClave(datos.clave),
+    }
+    guardarUsuarios(usuarios)
+    return true
+  }
+
+  const respuesta = await fetch(`${API_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: datos.clave }),
+  })
+
+  if (!respuesta.ok) {
+    throw new Error(await leerError(respuesta, 'No se pudo restablecer la contraseña.'))
+  }
+
+  return true
 }

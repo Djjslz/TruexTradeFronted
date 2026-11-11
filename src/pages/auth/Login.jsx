@@ -111,6 +111,10 @@ function Login() {
           {errores.clave && <span className="field-error">{errores.clave}</span>}
         </div>
 
+        <p className="auth-help">
+          <Link to="/recuperar">¿Olvidaste tu contraseña?</Link>
+        </p>
+
         <button type="submit" className="btn btn-primary btn-lg" disabled={enviando}>
           {enviando ? 'Entrando…' : 'Entrar'}
         </button>

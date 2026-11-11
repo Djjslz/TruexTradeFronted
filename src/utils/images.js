@@ -51,3 +51,33 @@ export async function procesarImagen(archivo) {
 
   return canvas.toDataURL('image/webp', 0.85)
 }
+
+const LADO_AVATAR = 320
+
+export async function procesarAvatar(archivo) {
+  if (!TIPOS_PERMITIDOS.includes(archivo.type)) {
+    throw new Error('Formato no permitido. Usa JPG, PNG, WEBP o GIF.')
+  }
+
+  if (archivo.size > TAMANO_MAXIMO) {
+    throw new Error('La imagen supera los 5 MB. Elige una más liviana.')
+  }
+
+  const dataUrl = await leerArchivo(archivo)
+
+  if (archivo.type === 'image/gif') {
+    return dataUrl
+  }
+
+  const imagen = await cargarImagen(dataUrl)
+  const escala = Math.min(1, LADO_AVATAR / Math.max(imagen.width, imagen.height))
+
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.round(imagen.width * escala))
+  canvas.height = Math.max(1, Math.round(imagen.height * escala))
+
+  const contexto = canvas.getContext('2d')
+  contexto.drawImage(imagen, 0, 0, canvas.width, canvas.height)
+
+  return canvas.toDataURL('image/webp', 0.85)
+}

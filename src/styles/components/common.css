@@ -47,6 +47,32 @@
   object-fit: cover;
 }
 
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.avatar-upload-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.avatar-upload-actions .btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.perfil-ok {
+  margin: 0 0 0.75rem;
+  color: var(--success);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .theme-toggle {
   display: inline-flex;
   align-items: center;

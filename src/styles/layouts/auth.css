@@ -111,6 +111,16 @@
   font-weight: 600;
 }
 
+.auth-help {
+  margin: -0.35rem 0 0;
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.auth-help a {
+  font-weight: 600;
+}
+
 .auth-back {
   align-self: center;
   color: rgba(255, 255, 255, 0.65);

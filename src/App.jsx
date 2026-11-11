@@ -10,6 +10,7 @@ import Perfil from './pages/Perfil'
 import Admin from './pages/Admin'
 import Login from './pages/auth/Login'
 import Registro from './pages/auth/Registro'
+import Recuperar from './pages/auth/Recuperar'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
       <Route element={<AuthLayout />}>
         <Route path="login" element={<Login />} />
         <Route path="registro" element={<Registro />} />
+        <Route path="recuperar" element={<Recuperar />} />
       </Route>
     </Routes>
   )
