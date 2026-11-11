@@ -479,3 +479,154 @@ npm run preview
 - Configurar `VITE_API_URL` con la URL real del backend en la nube.
 - Verificar los endpoints y el formato de respuesta del backend.
 - Confirmar que las publicaciones se comparten entre usuarios/dispositivos.
+
+---
+
+# Tercera sesión — Autenticación, perfil y navbar responsive
+
+> **Fecha de la sesión:** 10 de noviembre de 2026
+> **Asistente:** opencode (modelo deepseek-v4.1-flash-free)
+
+## 16. Mejoras de autenticación y perfil
+
+**Usuario:**
+
+> [solicitud de continuar mejorando el login: subir foto de perfil, "olvidé mi contraseña" y administración del perfil]
+
+**Acciones realizadas:**
+
+- `src/utils/images.js`: nueva función `procesarAvatar` (redimensiona a 320px, salida WebP, valida tipo y peso máximo 5 MB).
+- `src/services/auth.service.js`:
+  - `registrarMock` / `registrarUsuario` aceptan `avatar`.
+  - Añadidos `actualizarPerfil(datos, token)`, `cambiarClave({ actual, nueva }, token)`, `solicitarRecuperacion(correo)` y `restablecerClave({ correo, clave })`, con soporte mock y API.
+- `src/context/AuthContext.jsx`: nuevos métodos `updateProfile` y `changePassword`, expuestos en el contexto y sincronizados con la sesión guardada.
+- `src/pages/auth/Registro.jsx`: campo "Foto de perfil (opcional)" con vista previa, subir/cambiar/quitar y envío del avatar al registrarse.
+- `src/pages/auth/Login.jsx`: enlace "¿Olvidaste tu contraseña?" hacia `/recuperar`.
+- `src/pages/auth/Recuperar.jsx`: nueva página con flujo de dos pasos (solicitar código/correo → restablecer contraseña → confirmación).
+- `src/App.jsx`: se registró la ruta `/recuperar` dentro del layout de autenticación.
+- `src/pages/Perfil.jsx`: se añadieron las secciones **Administrar perfil** (nombre, usuario, ubicación y avatar con validaciones) y **Cambiar contraseña** (actual + nueva + confirmación).
+- `src/styles/components/common.css`: estilos `.avatar-upload`, `.avatar-upload-actions` y `.perfil-ok`.
+- `src/styles/layouts/auth.css`: estilo `.auth-help`.
+
+**Endpoints esperados con API real:** `PATCH /auth/me`, `POST /auth/change-password`, `POST /auth/forgot-password`, `POST /auth/reset-password`.
+
+**Resultado:** `npm run build` correcto y dev respondiendo HTTP 200.
+
+---
+
+## 17. Quitar el botón "Comunidad" del navbar
+
+**Usuario:**
+
+> quita la opcion de comunidad en la navbar solo el boton nada mas
+
+**Acciones realizadas:**
+
+- `src/components/navigation/Navbar.jsx`: se eliminó únicamente el enlace `Comunidad`.
+- Se conservaron la sección de comunidad y el resto de enlaces de la página.
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 18. Espaciado entre "Publicaciones recientes" y "Cómo funciona"
+
+**Usuario:**
+
+> mejorame el espaciado entre publicaciones recientes y como funciona ya que estan juntas
+
+**Acciones realizadas:**
+
+- `src/styles/components/home.css`: se añadió `margin-top: 3.5rem` a `.como-funciona` para separarla de la sección anterior.
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 19. Buscador del navbar a todo el espacio restante
+
+**Usuario:**
+
+> ahora quiero que la zona de buscar productos en la nav bar ocupe todo el espacio restante
+
+**Acciones realizadas:**
+
+- `src/styles/components/navbar.css`: `.buscador` pasó a `flex: 1 1 auto`, `min-width: 180px` y sin `max-width`, ocupando el espacio libre entre enlaces y acciones.
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 20. Botón de cerrar sesión como icono
+
+**Usuario:**
+
+> ahora cambia el botod de salir de la cuenta por el logo de cerrar secion
+
+**Acciones realizadas:**
+
+- `src/components/navigation/Navbar.jsx`: el botón "Salir" se reemplazó por un botón circular con icono SVG de cerrar sesión, con `aria-label` y `title` "Cerrar sesión".
+- `src/styles/components/navbar.css`: estilos `.nav-logout` (hover en rojo).
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 21. Distribución responsive del navbar
+
+**Usuario:**
+
+> ahora quiero que ajustes muy bien la distribucion de como se mira la navbar en todos los dispositivos ya que veo que en celular se mira muy mal
+
+**Acciones realizadas:**
+
+- Reescritura de `src/styles/components/navbar.css`:
+  - **Escritorio (>1100px):** fila única logo · enlaces · buscador · acciones.
+  - **Tablet (≤1100px):** logo, enlaces y espacios compactados.
+  - **Móvil (≤860px):** rejilla de 3 filas (logo + acciones / buscador a todo el ancho / enlaces deslizables en horizontal); se oculta solo el nombre de usuario y se reducen botones.
+  - **Móvil pequeño (≤380px):** botones aún más compactos.
+  - Logo reducido de 96px a 52px (46px tablet, 40px móvil) con `max-width: 100%` para no desbordar.
+  - Se ocultó la barra de scroll horizontal en los enlaces.
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 22. Ocultar el navbar al hacer scroll en móvil
+
+**Usuario:**
+
+> en dispositivos moviles mientras deslices hacia abajo que desaparezca la nav bar
+
+**Acciones realizadas:**
+
+- `src/components/navigation/Navbar.jsx`: detección de dirección del scroll con `useEffect`, `useRef` y `matchMedia('(max-width: 860px)')`.
+  - Se oculta al bajar (>80px de scroll) y reaparece al subir; umbral de 4px para evitar parpadeos.
+  - Se restablece al cambiar a escritorio.
+- `src/styles/components/navbar.css`: estado `.navbar.is-hidden` con `transform: translateY(-100%)` y transición de 0.3s; respeta `prefers-reduced-motion`.
+
+**Resultado:** `npm run build` correcto.
+
+---
+
+## 23. Estado actualizado del proyecto
+
+**Completado en esta etapa:**
+
+- Registro con foto de perfil y recuperación de contraseña.
+- Página de recuperación `/recuperar`.
+- Administración del perfil (datos, foto y cambio de contraseña).
+- Navbar sin el botón "Comunidad".
+- Mejor separación entre secciones de la Home.
+- Buscador del navbar ocupando el espacio restante.
+- Botón de cerrar sesión como icono.
+- Navbar responsive para escritorio, tablet y móvil.
+- Navbar que se oculta al hacer scroll hacia abajo en móvil.
+- Build de producción correcto en cada cambio.
+
+**Pendiente:**
+
+- Configurar `VITE_API_URL` con la URL real del backend en la nube.
+- Verificar los endpoints y el formato de respuesta del backend (auth, items, comentarios).
+- Confirmar que las publicaciones y comentarios se comparten entre usuarios/dispositivos.
+- Documentar/revisar los archivos añadidos fuera de esta sesión (`useContent.js`, `CircularCarousel.jsx`, `SplashCursor.jsx`).
