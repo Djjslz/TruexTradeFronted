@@ -22,7 +22,6 @@ function Navbar() {
           {isAdmin && <NavLink to="/admin">Panel</NavLink>}
           <a href="/#categorias">Categorías</a>
           <a href="/#como-funciona">Cómo funciona</a>
-          <a href="/#comunidad">Comunidad</a>
         </nav>
 
         <div className="buscador">
