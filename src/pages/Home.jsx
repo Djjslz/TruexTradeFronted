@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom'
 import { useItems } from '../hooks/useItems'
 import CircularCarousel from '../components/common/CircularCarousel'
+import ShatterText from '../components/common/ShatterText'
 import { useContent } from '../hooks/useContent'
 import { useTheme } from '../hooks/useTheme'
 import pasoRegistro from '../assets/images/paso-1-registro.svg'
 import pasoPublica from '../assets/images/paso-2-publica.svg'
 import pasoIntercambia from '../assets/images/paso-3-intercambia.svg'
 import pasoNuevaVida from '../assets/images/paso-4-nueva-vida.svg'
+import heroPortada from '../assets/images/hero-portada-panel.jpg'
+
+const COLORES_SHATTER = ['#fbbf24', '#e8860c']
 
 const ICONOS = {
   laptop: (
@@ -291,29 +295,42 @@ function Home() {
             </div>
           </div>
           <div className="hero-visual">
-            <div className="mano" aria-hidden="true">
-              {visual.imagenPrincipal ? (
-                <img src={visual.imagenPrincipal} alt="" />
-              ) : (
-                '🎮'
-              )}
+            <img
+              className="hero-visual__fondo"
+              src={visual.imagenPrincipal || heroPortada}
+              alt=""
+              aria-hidden="true"
+            />
+            <div className="hero-visual__velo" aria-hidden="true" />
+            <div className="manoescrito-shatter">
+              <ShatterText
+                text={
+                  visual.textoManuscrito?.trim()
+                    ? visual.textoManuscrito
+                    : 'Intercambia Ahora'
+                }
+                fontFamily="'Outfit', 'Segoe UI', sans-serif"
+                fontWeight={800}
+                align="center"
+                colors={COLORES_SHATTER}
+                accentColor="#ffb45c"
+                shardSize={0.09}
+                irregularity={0.6}
+                crack={0.45}
+                crackRadius={0.45}
+                shatterRadius={0.6}
+                force={1}
+                spin={1}
+                depth={1}
+                reassemble={1}
+                stiffness={0.7}
+                glint={0.9}
+                intro="assemble"
+                introDuration={1.6}
+                autoplay
+                autoplayInterval={9}
+              />
             </div>
-            <div className="camara" aria-hidden="true">
-              {visual.imagenSecundaria ? (
-                <img src={visual.imagenSecundaria} alt="" />
-              ) : (
-                '📷'
-              )}
-            </div>
-            <div className="flechas" aria-hidden="true">
-              <svg width="100%" height="100%" viewBox="0 0 120 120" fill="none" stroke="var(--primary)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.5">
-                <path d="M 30 60 Q 60 30 90 60" />
-                <path d="M 90 60 Q 60 90 30 60" />
-                <path d="M 75 45 L 90 60 L 75 75" />
-                <path d="M 45 75 L 30 60 L 45 45" />
-              </svg>
-            </div>
-            <div className="manoescrito">{visual.textoManuscrito}</div>
           </div>
         </div>
       </section>
@@ -350,22 +367,61 @@ function Home() {
           </div>
         </div>
 
-        <div className="como-funciona-carousel">
-          <CircularCarousel
-            items={PASOS_CARRUSEL}
-            preset="cylinder"
-            intro="rise"
-            cardWidth={190}
-            gap={36}
-            autoplay="step"
-            interval={3.5}
-            direction="left"
-            captions
-            fadeColor={esOscuro ? '#1e1e1e' : '#ffffff'}
-            depthFade={0.5}
-            innerShade={0.75}
-            cornerRadius={18}
-          />
+        <div className="como-funciona-layout">
+          <div className="como-funciona-carousel">
+            <CircularCarousel
+              items={PASOS_CARRUSEL}
+              preset="cylinder"
+              intro="rise"
+              cardWidth={300}
+              gap={30}
+              curve={0.5}
+              autoplay="step"
+              interval={3.5}
+              direction="left"
+              captions
+              fadeColor={esOscuro ? '#1e1e1e' : '#ffffff'}
+              depthFade={0}
+              innerShade={0.75}
+              cornerRadius={18}
+            />
+          </div>
+
+          <aside className="como-funciona-detalle" aria-hidden="true">
+            <div className="como-funciona-detalle__media">
+              <div className="intercambio" aria-hidden="true">
+                <span className="intercambio__halo" />
+                <span className="intercambio__orbita" />
+
+                <div className="intercambio__objeto intercambio__objeto--a">
+                  {ICONOS.laptop}
+                </div>
+                <div className="intercambio__objeto intercambio__objeto--b">
+                  {ICONOS.auriculares}
+                </div>
+
+                <div className="intercambio__centro">
+                  <svg
+                    viewBox="0 0 48 48"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M9 19a15 15 0 0 1 26-6" />
+                    <path d="M35 9v8h-8" />
+                    <path d="M39 29a15 15 0 0 1-26 6" />
+                    <path d="M13 39v-8h8" />
+                  </svg>
+                </div>
+
+                <span className="intercambio__punto intercambio__punto--1" />
+                <span className="intercambio__punto intercambio__punto--2" />
+                <span className="intercambio__punto intercambio__punto--3" />
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 

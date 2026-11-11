@@ -4,7 +4,7 @@ export const CONTENIDO_INICIAL = {
       visual: {
         imagenPrincipal: '',
         imagenSecundaria: '',
-        textoManuscrito: 'Más que objetos,\noportunidades',
+        textoManuscrito: 'Intercambia Ahora',
       },
     },
   },

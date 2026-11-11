@@ -3,44 +3,16 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useContent } from '../hooks/useContent'
 import { procesarImagen } from '../utils/images'
+import heroPortada from '../assets/images/hero-portada-panel.jpg'
 
 const CAMPOS_IMAGEN = [
   {
     clave: 'imagenPrincipal',
-    etiqueta: 'Imagen principal',
-    ayuda: 'Reemplaza el emoji 🎮 del círculo del hero.',
-    emoji: '🎮',
-  },
-  {
-    clave: 'imagenSecundaria',
-    etiqueta: 'Imagen secundaria',
-    ayuda: 'Reemplaza el emoji 📷 de la tarjeta del hero.',
-    emoji: '📷',
+    etiqueta: 'Imagen del hero',
+    ayuda: 'Ocupa todo el recuadro del hero. Si la quitas, vuelve la portada por defecto.',
+    respaldo: heroPortada,
   },
 ]
-
-function Flechas() {
-  return (
-    <div className="flechas" aria-hidden="true">
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 120 120"
-        fill="none"
-        stroke="var(--primary)"
-        strokeWidth="6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.5"
-      >
-        <path d="M 30 60 Q 60 30 90 60" />
-        <path d="M 90 60 Q 60 90 30 60" />
-        <path d="M 75 45 L 90 60 L 75 75" />
-        <path d="M 45 75 L 30 60 L 45 45" />
-      </svg>
-    </div>
-  )
-}
 
 function Admin() {
   const { user } = useAuth()
@@ -138,7 +110,7 @@ function Admin() {
           <div className="admin-panel-header">
             <h2>Inicio · Hero visual</h2>
             <p className="muted">
-              Personaliza las dos imágenes y el texto manuscrito del hero.
+              Personaliza la imagen y el texto del hero.
             </p>
           </div>
 
@@ -157,11 +129,10 @@ function Admin() {
             {CAMPOS_IMAGEN.map((campo) => (
               <div className="admin-image-card" key={campo.clave}>
                 <div className="admin-image-preview">
-                  {borrador[campo.clave] ? (
-                    <img src={borrador[campo.clave]} alt={campo.etiqueta} />
-                  ) : (
-                    <span aria-hidden="true">{campo.emoji}</span>
-                  )}
+                  <img
+                    src={borrador[campo.clave] || campo.respaldo}
+                    alt={campo.etiqueta}
+                  />
                 </div>
 
                 <div className="admin-image-body">
@@ -198,7 +169,7 @@ function Admin() {
 
           <div className="field">
             <label className="field-label" htmlFor="admin-manuscrito">
-              Texto manuscrito
+              Texto del hero
             </label>
             <textarea
               id="admin-manuscrito"
@@ -208,9 +179,12 @@ function Admin() {
               onChange={(evento) =>
                 cambiar('textoManuscrito', evento.target.value)
               }
-              placeholder={'Más que objetos,\noportunidades'}
+              placeholder="Intercambia Ahora"
             />
-            <small>Usa un salto de línea para separar las frases.</small>
+            <small>
+              Se muestra con el efecto de fragmentos en el hero. Usa un salto de
+              línea para separar las frases.
+            </small>
           </div>
 
           <div className="admin-actions">
@@ -231,21 +205,13 @@ function Admin() {
         <aside className="admin-preview" aria-label="Vista previa del hero">
           <span className="admin-nav-title">Vista previa</span>
           <div className="hero-visual admin-hero-preview">
-            <div className="mano" aria-hidden="true">
-              {borrador.imagenPrincipal ? (
-                <img src={borrador.imagenPrincipal} alt="" />
-              ) : (
-                '🎮'
-              )}
-            </div>
-            <div className="camara" aria-hidden="true">
-              {borrador.imagenSecundaria ? (
-                <img src={borrador.imagenSecundaria} alt="" />
-              ) : (
-                '📷'
-              )}
-            </div>
-            <Flechas />
+            <img
+              className="hero-visual__fondo"
+              src={borrador.imagenPrincipal || heroPortada}
+              alt=""
+              aria-hidden="true"
+            />
+            <div className="hero-visual__velo" aria-hidden="true" />
             <div className="manoescrito">{borrador.textoManuscrito}</div>
           </div>
         </aside>

@@ -4,6 +4,7 @@ import { CONTENIDO_INICIAL } from '../data/contenido'
 export const ContentContext = createContext(null)
 
 const CONTENIDO_KEY = 'truex-contenido'
+const TEXTO_MANUSCRITO_ANTERIOR = 'Más que objetos,\noportunidades'
 
 function clonar(valor) {
   return JSON.parse(JSON.stringify(valor))
@@ -11,6 +12,10 @@ function clonar(valor) {
 
 function normalizarVisual(visual = {}) {
   const base = CONTENIDO_INICIAL.inicio.hero.visual
+  const texto =
+    typeof visual.textoManuscrito === 'string'
+      ? visual.textoManuscrito
+      : base.textoManuscrito
 
   return {
     imagenPrincipal:
@@ -22,9 +27,7 @@ function normalizarVisual(visual = {}) {
         ? visual.imagenSecundaria
         : base.imagenSecundaria,
     textoManuscrito:
-      typeof visual.textoManuscrito === 'string'
-        ? visual.textoManuscrito
-        : base.textoManuscrito,
+      texto === TEXTO_MANUSCRITO_ANTERIOR ? base.textoManuscrito : texto,
   }
 }
 

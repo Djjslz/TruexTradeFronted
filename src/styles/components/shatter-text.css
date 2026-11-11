@@ -1,0 +1,34 @@
+.shatter-text {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+.shatter-text__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.manoescrito-shatter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  width: min(68%, 320px);
+  height: 32%;
+  margin-inline: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 20px rgba(232, 134, 12, 0.25));
+}
+
+@media (max-width: 768px) {
+  .manoescrito-shatter {
+    top: 0;
+    width: 74%;
+    height: 34%;
+  }
+}
