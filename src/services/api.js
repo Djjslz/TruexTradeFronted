@@ -1,5 +1,3 @@
-import { items as itemsBase } from '../data/items'
-
 const API_URL = (import.meta.env.VITE_API_URL ?? '').trim()
 const usaMock = !API_URL || API_URL.includes('tu-api-en-la-nube')
 const ITEMS_KEY = 'truex-items'
@@ -54,7 +52,7 @@ async function leerError(respuesta, porDefecto) {
 
 export async function getItems() {
   if (usaMock) {
-    return [...leerItemsLocales(), ...itemsBase]
+    return leerItemsLocales()
   }
 
   const respuesta = await fetch(`${API_URL}/items`)
@@ -70,7 +68,7 @@ export async function getItems() {
 export async function getItemById(id) {
   if (usaMock) {
     const locales = leerItemsLocales()
-    return locales.find((item) => item.id === id) ?? itemsBase.find((item) => item.id === id) ?? null
+    return locales.find((item) => item.id === id) ?? null
   }
 
   const respuesta = await fetch(`${API_URL}/items/${id}`)
