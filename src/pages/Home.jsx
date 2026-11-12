@@ -4,10 +4,10 @@ import CircularCarousel from '../components/common/CircularCarousel'
 import ShatterText from '../components/common/ShatterText'
 import { useContent } from '../hooks/useContent'
 import { useTheme } from '../hooks/useTheme'
-import pasoRegistro from '../assets/images/paso-1-registro.svg'
-import pasoPublica from '../assets/images/paso-2-publica.svg'
-import pasoIntercambia from '../assets/images/paso-3-intercambia.svg'
-import pasoNuevaVida from '../assets/images/paso-4-nueva-vida.svg'
+import pasoRegistro from '../assets/images/paso-1-registro.jpg'
+import pasoPublica from '../assets/images/paso-2-publica.jpg'
+import pasoIntercambia from '../assets/images/paso-3-intercambia.jpg'
+import pasoNuevaVida from '../assets/images/paso-4-nueva-vida.jpg'
 import heroPortada from '../assets/images/hero-portada-panel.jpg'
 
 const COLORES_SHATTER = ['#fbbf24', '#e8860c']
@@ -188,25 +188,25 @@ const PUBLICACIONES = [
 const PASOS_CARRUSEL = [
   {
     src: pasoRegistro,
-    alt: 'Persona creando una cuenta',
+    alt: 'Persona creando su cuenta en Truex desde un portátil',
     title: '01 · Regístrate',
     subtitle: 'Crea tu cuenta en pocos minutos.',
   },
   {
     src: pasoPublica,
-    alt: 'Caja con una publicación nueva',
+    alt: 'Persona publicando un trueque desde una tablet',
     title: '02 · Publica',
     subtitle: 'Sube los objetos que ya no usas.',
   },
   {
     src: pasoIntercambia,
-    alt: 'Flechas de intercambio',
+    alt: 'Dos personas intercambiando una cámara y un libro',
     title: '03 · Intercambia',
     subtitle: 'Conéctate con personas interesadas.',
   },
   {
     src: pasoNuevaVida,
-    alt: 'Brote de una nueva vida',
+    alt: 'Personas dándole una nueva vida a sus objetos en una feria de intercambio',
     title: '04 · Dale una nueva vida',
     subtitle: 'Tus objetos siguen siendo útiles.',
   },

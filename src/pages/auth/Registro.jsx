@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import Avatar from '../../components/common/Avatar'
+import logoVertical from '../../assets/logos/logo-vertical.png'
 import { procesarAvatar } from '../../utils/images'
 import {
   validarClave,
@@ -10,6 +10,8 @@ import {
   validarUbicacion,
   validarUsername,
 } from '../../utils/validators'
+
+const Lanyard = lazy(() => import('../../components/common/Lanyard'))
 
 function Registro() {
   const [nombre, setNombre] = useState('')
@@ -109,8 +111,38 @@ function Registro() {
 
         <div className="field">
           <span className="field-label">Foto de perfil (opcional)</span>
-          <div className="avatar-upload">
-            <Avatar nombre={nombre || 'U'} src={avatar} size={72} />
+          <div className="lanyard-stage" aria-hidden="true">
+            <Suspense
+              fallback={
+                <div className="lanyard-fallback">
+                  <img src={logoVertical} alt="" />
+                </div>
+              }
+            >
+              <Lanyard
+                frontImage={avatar || logoVertical}
+                backImage={avatar || logoVertical}
+                imageFit={avatar ? 'cover' : 'contain'}
+                cardColor="#101216"
+                orientation="portrait"
+                finish="glossy"
+                cornerRadius={0.35}
+                size={0.72}
+                anchor="center"
+                strapLength={0.38}
+                strapColor="#e8860c"
+                strapWidth={0.6}
+                metal="gold"
+                gravity={1}
+                damping={0.5}
+                elasticity={0.5}
+                breeze={0.4}
+                interactive
+                intro
+              />
+            </Suspense>
+          </div>
+          <div className="lanyard-actions">
             <div className="avatar-upload-actions">
               <label className="btn btn-outline btn-sm">
                 {procesandoAvatar ? 'Procesando…' : avatar ? 'Cambiar foto' : 'Subir foto'}
@@ -132,6 +164,12 @@ function Registro() {
                 </button>
               )}
             </div>
+            <p className="lanyard-hint">
+              Arrastra la credencial para moverla.{' '}
+              {avatar
+                ? 'Puedes cambiar o quitar la foto cuando quieras.'
+                : 'Si no subes foto, usaremos el logo de TrueX.'}
+            </p>
           </div>
           {errorAvatar && <span className="field-error">{errorAvatar}</span>}
         </div>

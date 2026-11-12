@@ -1,22 +1,52 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import ArticleCard from '../components/cards/ArticleCard'
 import SplashCursor from '../components/common/SplashCursor'
 import { useItems } from '../hooks/useItems'
 import { useTheme } from '../hooks/useTheme'
 
+const normalizarTexto = (valor) =>
+  String(valor)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
 function Explorar() {
   const { items, cargando, error } = useItems()
   const { esOscuro } = useTheme()
-  const [busqueda, setBusqueda] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const busqueda = searchParams.get('buscar') ?? ''
+
+  const manejarBusqueda = (evento) => {
+    const valor = evento.target.value
+    const params = new URLSearchParams(searchParams)
+
+    if (valor.trim()) params.set('buscar', valor)
+    else params.delete('buscar')
+
+    setSearchParams(params, { replace: true })
+  }
 
   const filtrados = useMemo(() => {
-    const texto = busqueda.trim().toLowerCase()
-    if (!texto) return items
-    return items.filter((item) =>
-      [item.titulo, item.categoria, item.descripcion, item.ubicacion]
-        .filter(Boolean)
-        .some((valor) => String(valor).toLowerCase().includes(texto)),
-    )
+    const terminos = normalizarTexto(busqueda.trim()).split(/\s+/).filter(Boolean)
+    if (!terminos.length) return items
+
+    return items.filter((item) => {
+      const contenido = normalizarTexto(
+        [
+          item.titulo,
+          item.categoria,
+          item.descripcion,
+          item.ubicacion,
+          item.estado,
+          item.usuario?.nombre ?? item.usuario,
+        ]
+          .filter(Boolean)
+          .join(' '),
+      )
+
+      return terminos.every((termino) => contenido.includes(termino))
+    })
   }, [items, busqueda])
 
   return (
@@ -39,7 +69,7 @@ function Explorar() {
             className="input search"
             placeholder="Buscar por título, categoría o ubicación"
             value={busqueda}
-            onChange={(evento) => setBusqueda(evento.target.value)}
+            onChange={manejarBusqueda}
           />
 
           {cargando && <p className="empty">Cargando artículos…</p>}

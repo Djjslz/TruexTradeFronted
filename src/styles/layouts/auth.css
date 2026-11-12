@@ -94,6 +94,52 @@
   margin-top: 0.25rem;
 }
 
+.lanyard-stage {
+  position: relative;
+  height: 310px;
+  overflow: hidden;
+}
+
+.lanyard-stage .lanyard {
+  position: absolute;
+  inset: 0;
+}
+
+.lanyard-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.lanyard-fallback img {
+  width: 112px;
+  opacity: 0.7;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+}
+
+.lanyard-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.lanyard-actions .avatar-upload-actions .btn {
+  width: auto;
+  margin-top: 0;
+}
+
+.lanyard-hint {
+  flex: 1 1 180px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
 .auth-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -162,5 +208,14 @@
 
   .auth-grid {
     grid-template-columns: 1fr;
+  }
+
+  .lanyard-stage {
+    height: 270px;
+  }
+
+  .lanyard-actions {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

@@ -630,3 +630,104 @@ npm run preview
 - Verificar los endpoints y el formato de respuesta del backend (auth, items, comentarios).
 - Confirmar que las publicaciones y comentarios se comparten entre usuarios/dispositivos.
 - Documentar/revisar los archivos añadidos fuera de esta sesión (`useContent.js`, `CircularCarousel.jsx`, `SplashCursor.jsx`).
+
+---
+
+# Cuarta sesión — Buscador del navbar y credencial 3D del registro
+
+> **Fecha de la sesión:** 11 de noviembre de 2026
+> **Asistente:** opencode (modelo deepseek-v4.1-flash-free)
+> **Ruta de trabajo actual:** `C:\Users\El Kupis\Desktop\TruexTradeFronted`
+> **Nota:** las sesiones anteriores documentan la ruta `C:\Users\David Garcia\Desktop\...`; el proyecto activo en esta sesión se encuentra en la ruta indicada arriba.
+
+## 24. Contexto de partida
+
+- Se retomó el proyecto para cerrar el buscador del navbar y mejorar el registro.
+- Estado confirmado antes de los cambios:
+  - Detalle de artículo con Favoritos y Me gusta persistidos en `localStorage` (`truex-favoritos`, `truex-me-gusta`).
+  - Zoom de imágenes en modal/portal con controles `+`, `-`, restablecer, arrastre y cierre con `Esc`.
+  - Barra superior del detalle con “← Volver a explorar” y botón `×`.
+  - Carrusel “Cómo funciona” con imágenes `paso-1-registro.jpg` a `paso-4-nueva-vida.jpg` y panel de iconos transparente con animación cada 2 s.
+  - `npm run build` correcto.
+
+## 25. Buscador del navbar funcional
+
+**Problema:** el input “Buscar productos...” no tenía estado controlado ni handler; el botón era `type="button"` y no ejecutaba nada. `Explorar.jsx` solo filtraba con un estado local y no leía parámetros de la URL.
+
+**Cambios realizados:**
+
+- `src/components/navigation/Navbar.jsx`:
+  - Se añadieron `useNavigate` y `useSearchParams`.
+  - El input quedó controlado por el estado `busqueda`.
+  - El input se sincroniza con el parámetro `?buscar=`.
+  - Se reemplazó el contenedor por un formulario `role="search"` con `onSubmit` y botón `type="submit"`.
+  - Al enviar, navega a `/explorar?buscar=<texto>`; si está vacío, navega a `/explorar`.
+  - Funciona tanto con Enter como con clic en la lupa.
+- `src/pages/Explorar.jsx`:
+  - La búsqueda se deriva de `useSearchParams` con la clave `buscar`.
+  - Al escribir se actualiza la URL con `replace: true`, sin recargar la página.
+  - Se agregó normalización NFD para ignorar tildes y mayúsculas.
+  - La consulta se divide en palabras y se exige que todas aparezcan en el contenido.
+  - Campos buscados: título, categoría, descripción, ubicación, estado y nombre del usuario.
+  - Sin resultados se conserva el mensaje “No se encontraron artículos.”
+
+**Pruebas realizadas con Chrome DevTools Protocol:**
+
+- `mando` → 1 resultado (Mando de Xbox Series).
+- `tecnologia` sin tilde → 2 resultados (Mando de Xbox Series e iPhone 18 Pro Max).
+- `mando xbox` → 1 resultado.
+- `zapatos cuero` → 1 resultado.
+- `no-existe-xyz` → 0 resultados y estado vacío visible.
+- Enter, clic en la lupa, sincronización navbar/Explorar y borrado funcionando.
+- Vista móvil 390×844 sin desbordamiento horizontal.
+- `npm run build` correcto.
+
+## 26. Credencial 3D (Lanyard) en el registro
+
+**Solicitud:** integrar el componente Lanyard de React Bits (`https://reactbits.dev/components/lanyard`) en `/registro`. La foto de perfil es opcional; antes de subirla debía verse la animación y, al subirla, la credencial debía mostrar la foto del usuario.
+
+**Implementación:**
+
+- Se instaló la dependencia `three@^0.180.0`.
+- Se añadió `src/components/common/Lanyard.jsx` con el componente de React Bits y su aviso de licencia MIT + Commons Clause de David Haz.
+- Se añadió `src/styles/components/lanyard.css` y se importó desde `src/styles/index.css`.
+- `src/pages/auth/Registro.jsx`:
+  - Carga diferida con `lazy()` y `Suspense`, usando el logo como fallback.
+  - Se sustituyó el avatar circular por una credencial 3D dentro de `.lanyard-stage`.
+  - Sin foto: logo vertical de TrueX con `imageFit="contain"` sobre una tarjeta oscura.
+  - Con foto: el data URL procesado por `procesarAvatar` se usa como `frontImage` y `backImage` con `imageFit="cover"`.
+  - Se mantienen las acciones subir, cambiar y quitar foto.
+  - La credencial se puede arrastrar y voltear; incluye intro y física.
+  - Cinta naranja (`#e8860c`), metal dorado, `size={0.72}` y `strapLength={0.38}`.
+  - El texto de ayuda cambia según si hay foto o no.
+- `src/styles/layouts/auth.css`:
+  - `.lanyard-stage` mide 310 px en escritorio y 270 px en móvil.
+  - Los botones de foto usan ancho automático y el bloque es responsive.
+
+**Ajuste posterior solicitado:** se eliminó el fondo, borde, radio y la etiqueta flotante del contenedor; la animación queda limpia, sin recuadro ni sombra.
+
+**Pruebas realizadas:**
+
+- Escritorio y móvil.
+- Tema claro y oscuro.
+- Subida de imagen: la credencial cambia a la foto y aparecen “Cambiar foto” y “Quitar”.
+- Quitar foto: vuelve al logo y a “Subir foto”.
+- Sin errores de consola y con canvas WebGL renderizado.
+- `npm run build` correcto.
+
+## 27. Estado actualizado del proyecto
+
+**Completado en esta sesión:**
+
+- Buscador del navbar funcional con Enter y botón.
+- Búsqueda de Explorar sincronizada con la URL.
+- Búsqueda sin distinguir mayúsculas/tildes y por múltiples palabras.
+- Credencial 3D Lanyard en el registro con logo de respaldo y foto del usuario.
+- Animación sin fondo/recuadro, responsive y compatible con ambos temas.
+- Build de producción correcto.
+
+**Pendiente / observaciones:**
+
+- El chunk de Lanyard pesa aproximadamente 540.64 kB (140 kB gzip) porque incluye Three.js; se carga solo al entrar a `/registro`. Vite muestra una advertencia de tamaño (>500 kB). Si se requiere, se puede dividir más o ajustar `chunkSizeWarningLimit`.
+- Sigue pendiente configurar `VITE_API_URL` con la URL real del backend y validar endpoints y compartición de publicaciones.
+- La copia `C:\Users\El Kupis\Documents\proyecto gitgub\TruexTradeFronted\eyects.md` es un historial antiguo y no se actualizó en esta sesión.

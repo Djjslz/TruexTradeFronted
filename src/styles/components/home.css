@@ -337,10 +337,8 @@
     display: block;
     position: relative;
     height: 480px;
-    border-radius: var(--radio-lg);
     overflow: hidden;
-    background: #0b0b0b;
-    border: 1px solid var(--border);
+    background: transparent;
   }
 
   .como-funciona-detalle__media {
@@ -380,7 +378,7 @@
     top: 50%;
     width: 280px;
     height: 168px;
-    border: 1px dashed rgba(251, 191, 36, 0.2);
+    border: 1px dashed rgba(232, 134, 12, 0.28);
     border-radius: 50%;
     transform: translate(-50%, -50%);
   }
@@ -393,28 +391,23 @@
     height: 88px;
     display: grid;
     place-items: center;
-    border-radius: 22px;
-    background: linear-gradient(155deg, #2b2217 0%, #14110d 60%, #0b0a08 100%);
-    border: 1px solid rgba(251, 191, 36, 0.35);
-    box-shadow:
-      0 22px 45px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    color: #fbbf24;
+    color: var(--primary);
+    filter: drop-shadow(0 14px 18px rgba(232, 134, 12, 0.25));
     z-index: 1;
     will-change: transform;
   }
 
   .intercambio__objeto svg {
-    width: 38px;
-    height: 38px;
+    width: 56px;
+    height: 56px;
   }
 
   .intercambio__objeto--a {
-    animation: intercambio-ida 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    animation: intercambio-ida 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
 
   .intercambio__objeto--b {
-    animation: intercambio-vuelta 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    animation: intercambio-vuelta 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
 
   .intercambio__centro {
@@ -425,20 +418,15 @@
     height: 78px;
     display: grid;
     place-items: center;
-    border-radius: 50%;
     transform: translate(-50%, -50%);
-    background: radial-gradient(circle at 35% 30%, #3a2a17, #120f0b 70%);
-    border: 1px solid rgba(251, 191, 36, 0.5);
-    box-shadow:
-      0 0 0 7px rgba(251, 191, 36, 0.06),
-      0 0 38px rgba(232, 134, 12, 0.4);
-    color: #fbbf24;
+    color: var(--primary);
+    filter: drop-shadow(0 10px 16px rgba(232, 134, 12, 0.3));
     z-index: 2;
   }
 
   .intercambio__centro svg {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     animation: intercambio-giro 14s linear infinite;
   }
 

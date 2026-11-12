@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import ThemeToggle from '../common/ThemeToggle'
 import Avatar from '../common/Avatar'
@@ -7,8 +7,22 @@ import logo from '../../assets/logos/logo-horizontal.png'
 
 function Navbar() {
   const { user, logout, isAdmin } = useAuth()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const busquedaUrl = searchParams.get('buscar') ?? ''
+  const [busqueda, setBusqueda] = useState(busquedaUrl)
   const [oculto, setOculto] = useState(false)
   const ultimoScroll = useRef(0)
+
+  useEffect(() => {
+    setBusqueda(busquedaUrl)
+  }, [busquedaUrl])
+
+  const manejarBusqueda = (evento) => {
+    evento.preventDefault()
+    const texto = busqueda.trim()
+    navigate(texto ? `/explorar?buscar=${encodeURIComponent(texto)}` : '/explorar')
+  }
 
   useEffect(() => {
     const movil = window.matchMedia('(max-width: 860px)')
@@ -63,20 +77,22 @@ function Navbar() {
           <a href="/#como-funciona">Cómo funciona</a>
         </nav>
 
-        <div className="buscador">
+        <form className="buscador" role="search" onSubmit={manejarBusqueda}>
           <input
-            type="text"
+            type="search"
             className="input"
             placeholder="Buscar productos..."
             aria-label="Buscar productos"
+            value={busqueda}
+            onChange={(evento) => setBusqueda(evento.target.value)}
           />
-          <button type="button" className="btn btn-ghost btn-sm" aria-label="Buscar">
+          <button type="submit" className="btn btn-ghost btn-sm" aria-label="Buscar">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" />
             </svg>
           </button>
-        </div>
+        </form>
 
         <div className="nav-actions">
           <ThemeToggle />
