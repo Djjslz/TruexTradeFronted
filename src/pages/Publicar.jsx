@@ -62,6 +62,7 @@ function Publicar() {
 
     if (procesadas.length > 0) {
       setImagenes((actuales) => [...actuales, ...procesadas])
+      limpiarError('imagenes')
     }
 
     setErrorImagenes(mensaje)
@@ -80,7 +81,34 @@ function Publicar() {
   }
 
   const quitarImagen = (indice) => {
+    if (imagenes.length <= 1) {
+      setErrorImagenes('Debe quedar al menos una foto en la publicación.')
+      return
+    }
+
+    setErrorImagenes('')
     setImagenes((actuales) => actuales.filter((imagen, posicion) => posicion !== indice))
+  }
+
+  const reemplazarImagen = async (evento, indice) => {
+    const archivo = evento.target.files?.[0]
+    evento.target.value = ''
+    if (!archivo) return
+
+    setErrorImagenes('')
+    setProcesando(true)
+
+    try {
+      const procesada = await procesarImagen(archivo)
+      setImagenes((actuales) =>
+        actuales.map((imagen, posicion) => (posicion === indice ? procesada : imagen)),
+      )
+      limpiarError('imagenes')
+    } catch (error) {
+      setErrorImagenes(error.message)
+    } finally {
+      setProcesando(false)
+    }
   }
 
   const validar = () => {
@@ -98,6 +126,9 @@ function Publicar() {
     if (!estado) nuevos.estado = 'Selecciona el estado del artículo.'
     if (ubicacion.trim().length < 2) {
       nuevos.ubicacion = 'Indica tu ciudad o región.'
+    }
+    if (imagenes.length === 0) {
+      nuevos.imagenes = 'Sube al menos una foto del artículo.'
     }
 
     return nuevos
@@ -267,7 +298,7 @@ function Publicar() {
         </div>
 
         <div className="field">
-          <span className="field-label">Imágenes</span>
+          <span className="field-label">Fotos (mínimo 1)</span>
           <label
             className={`upload-drop ${arrastrando ? 'is-dragging' : ''} ${
               limiteAlcanzado ? 'is-disabled' : ''
@@ -297,20 +328,39 @@ function Publicar() {
             <span>Hasta {MAX_IMAGENES} imágenes · JPG, PNG, WEBP o GIF · máx. 5 MB</span>
           </label>
           {errorImagenes && <span className="field-error">{errorImagenes}</span>}
+          {errores.imagenes && <span className="field-error">{errores.imagenes}</span>}
 
           {imagenes.length > 0 && (
             <div className="upload-grid">
               {imagenes.map((imagen, indice) => (
                 <div className="upload-item" key={`${indice}-${imagen.slice(-24)}`}>
                   <img src={imagen} alt={`Imagen ${indice + 1}`} />
-                  <button
-                    type="button"
-                    className="upload-remove"
-                    onClick={() => quitarImagen(indice)}
-                    aria-label={`Quitar imagen ${indice + 1}`}
-                  >
-                    ×
-                  </button>
+                  <div className="upload-actions">
+                    <label className="upload-change" title="Cambiar esta foto">
+                      <input
+                        type="file"
+                        className="sr-only"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        onChange={(evento) => reemplazarImagen(evento, indice)}
+                        disabled={enviando || procesando}
+                      />
+                      Cambiar
+                    </label>
+                    <button
+                      type="button"
+                      className="upload-remove"
+                      onClick={() => quitarImagen(indice)}
+                      disabled={imagenes.length <= 1}
+                      title={
+                        imagenes.length <= 1
+                          ? 'Debe quedar al menos una foto'
+                          : `Quitar imagen ${indice + 1}`
+                      }
+                      aria-label={`Quitar imagen ${indice + 1}`}
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

@@ -98,9 +98,9 @@ function Navbar() {
           <ThemeToggle />
           {user ? (
             <>
-              <Link to="/perfil" className="nav-user">
+              <Link to="/perfil" className="nav-user" aria-label="Ver mi perfil">
                 <Avatar nombre={user.nombre} src={user.avatar} size={30} />
-                <span>{user.nombre}</span>
+                <span className="nav-user-name">{user.nombre}</span>
               </Link>
               <button
                 type="button"

@@ -258,8 +258,19 @@
     display: none;
   }
 
-  .nav-user span {
+  .nav-user-name {
     display: none;
+  }
+
+  .nav-user .avatar {
+    border: 2px solid var(--border);
+    box-shadow: var(--sombra-sm);
+    transition: border-color var(--transicion);
+  }
+
+  .nav-user:hover .avatar,
+  .nav-user:focus-visible .avatar {
+    border-color: var(--primary);
   }
 }
 

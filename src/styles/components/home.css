@@ -178,6 +178,8 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
   transition: transform var(--transicion), box-shadow var(--transicion),
     border-color var(--transicion);
 }
@@ -253,6 +255,10 @@
   font-weight: 700;
   line-height: 1.25;
   color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .tarjeta .estado {

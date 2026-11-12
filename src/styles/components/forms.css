@@ -116,10 +116,37 @@ textarea.input {
   object-fit: cover;
 }
 
-.upload-remove {
+.upload-actions {
   position: absolute;
-  top: 0.25rem;
   right: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.upload-change {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radio-pill);
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transicion);
+}
+
+.upload-change:hover {
+  background: var(--primary);
+}
+
+.upload-remove {
+  position: relative;
   display: grid;
   place-items: center;
   width: 1.5rem;
@@ -131,10 +158,20 @@ textarea.input {
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
+  transition: background-color var(--transicion), opacity var(--transicion);
 }
 
 .upload-remove:hover {
   background: var(--danger);
+}
+
+.upload-remove:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.upload-remove:disabled:hover {
+  background: rgba(0, 0, 0, 0.65);
 }
 
 .field {

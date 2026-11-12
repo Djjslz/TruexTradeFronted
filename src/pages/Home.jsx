@@ -134,57 +134,6 @@ const CATEGORIAS = [
   { clave: 'otros', label: 'Otros', icono: ICONOS.puntos },
 ]
 
-const PUBLICACIONES = [
-  {
-    id: 1,
-    titulo: 'Laptop Lenovo',
-    estado: 'Bueno estado',
-    tipo: 'trueque',
-    categoria: 'Tecnología',
-    icono: ICONOS.laptop,
-  },
-  {
-    id: 2,
-    titulo: 'Nike Air Force 1',
-    estado: 'Excelente estado',
-    tipo: 'trueque',
-    categoria: 'Ropa',
-    icono: ICONOS.zapatilla,
-  },
-  {
-    id: 3,
-    titulo: 'Cámara Canon',
-    estado: 'Bueno estado',
-    tipo: 'trueque',
-    categoria: 'Cámaras',
-    icono: ICONOS.camara,
-  },
-  {
-    id: 4,
-    titulo: 'Audífonos Sony',
-    estado: 'Excelente estado',
-    tipo: 'trueque',
-    categoria: 'Audio',
-    icono: ICONOS.auriculares,
-  },
-  {
-    id: 5,
-    titulo: 'Guitarra Eléctrica',
-    estado: 'Bueno estado',
-    tipo: 'trueque',
-    categoria: 'Instrumentos',
-    icono: ICONOS.guitarra,
-  },
-  {
-    id: 6,
-    titulo: 'Apple Watch',
-    estado: 'Excelente estado',
-    tipo: 'trueque',
-    categoria: 'Tecnología',
-    icono: ICONOS.reloj,
-  },
-]
-
 const PASOS_CARRUSEL = [
   {
     src: pasoRegistro,
@@ -254,22 +203,20 @@ function Tarjeta({ p }) {
 
 function Home() {
   const { contenido } = useContent()
-  const { items } = useItems()
+  const { items, cargando } = useItems()
   const { esOscuro } = useTheme()
   const visual = contenido.inicio.hero.visual
 
-  const publicaciones = items.length > 0
-    ? items.slice(0, 6).map((item) => ({
-        id: item.id,
-        titulo: item.titulo,
-        estado: item.estado,
-        tipo: item.tipo,
-        categoria: item.categoria,
-        imagenes: item.imagenes,
-        imagen: item.imagen,
-        ubicacion: item.ubicacion,
-      }))
-    : PUBLICACIONES
+  const publicaciones = items.slice(0, 6).map((item) => ({
+    id: item.id,
+    titulo: item.titulo,
+    estado: item.estado,
+    tipo: item.tipo,
+    categoria: item.categoria,
+    imagenes: item.imagenes,
+    imagen: item.imagen,
+    ubicacion: item.ubicacion,
+  }))
 
   return (
     <div className="container page">
@@ -354,9 +301,15 @@ function Home() {
             Ver todas →
           </Link>
         </div>
-        <div className="publicaciones">
-          {publicaciones.map((p) => <Tarjeta key={p.id} p={p} />)}
-        </div>
+        {cargando && <p className="empty">Cargando publicaciones…</p>}
+        {!cargando && publicaciones.length === 0 && (
+          <p className="empty">Aún no hay publicaciones. ¡Publica el primero!</p>
+        )}
+        {!cargando && publicaciones.length > 0 && (
+          <div className="publicaciones">
+            {publicaciones.map((p) => <Tarjeta key={p.id} p={p} />)}
+          </div>
+        )}
       </section>
 
       <section className="como-funciona" id="como-funciona" aria-label="Cómo funciona">

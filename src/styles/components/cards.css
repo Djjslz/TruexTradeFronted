@@ -5,8 +5,15 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
   transition: transform var(--transicion), box-shadow var(--transicion),
     border-color var(--transicion);
+}
+
+.card:focus-visible {
+  outline: 3px solid var(--primary-light);
+  outline-offset: 2px;
 }
 
 .card:hover {
@@ -51,6 +58,10 @@
   margin: 0;
   color: var(--text-muted);
   font-size: 0.9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-meta {
@@ -73,4 +84,25 @@
 
 .card-actions .btn {
   margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .card-media {
+    height: 180px;
+  }
+
+  .card-body {
+    padding: 0.9rem;
+  }
+
+  .card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-actions .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
 }

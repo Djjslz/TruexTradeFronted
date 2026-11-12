@@ -633,101 +633,85 @@ npm run preview
 
 ---
 
-# Cuarta sesión — Buscador del navbar y credencial 3D del registro
+# Cuarta sesión — Revisión del backend y conexión del frontend desplegado
 
 > **Fecha de la sesión:** 11 de noviembre de 2026
 > **Asistente:** opencode (modelo deepseek-v4.1-flash-free)
-> **Ruta de trabajo actual:** `C:\Users\El Kupis\Desktop\TruexTradeFronted`
-> **Nota:** las sesiones anteriores documentan la ruta `C:\Users\David Garcia\Desktop\...`; el proyecto activo en esta sesión se encuentra en la ruta indicada arriba.
 
-## 24. Contexto de partida
+## 24. Publicaciones no visibles para otros usuarios
 
-- Se retomó el proyecto para cerrar el buscador del navbar y mejorar el registro.
-- Estado confirmado antes de los cambios:
-  - Detalle de artículo con Favoritos y Me gusta persistidos en `localStorage` (`truex-favoritos`, `truex-me-gusta`).
-  - Zoom de imágenes en modal/portal con controles `+`, `-`, restablecer, arrastre y cierre con `Esc`.
-  - Barra superior del detalle con “← Volver a explorar” y botón `×`.
-  - Carrusel “Cómo funciona” con imágenes `paso-1-registro.jpg` a `paso-4-nueva-vida.jpg` y panel de iconos transparente con animación cada 2 s.
-  - `npm run build` correcto.
+**Usuario:**
 
-## 25. Buscador del navbar funcional
+> un usuario ya registrado creó un producto y no es visible para los otros users ni tampoco para los que no se identifican; revisa la versión actualizada del proyecto backend en la raíz del proyecto
 
-**Problema:** el input “Buscar productos...” no tenía estado controlado ni handler; el botón era `type="button"` y no ejecutaba nada. `Explorar.jsx` solo filtraba con un estado local y no leía parámetros de la URL.
+**Revisión del backend actualizado:**
+
+Ruta: `C:\Users\David Garcia\Desktop\Truex\truex-trade-backend`
+
+- Repositorio en `main`, limpio y al día con `origin/main` (`f03a6e0`).
+- `GET /api/items` es público: usa `autenticarOpcional`, filtra `activo: true` y devuelve `{ items, total, pagina, paginas }` (12 por página, máximo 50).
+- `POST /api/items` requiere token y responde `{ item }`; `PATCH /api/users/me` actualiza el perfil.
+- CORS permite el origen `https://truextrade.vercel.app` (verificado con `OPTIONS` → 204 y `access-control-allow-origin` correcto).
+- Backend desplegado en Render:
+  - `GET /api/health` → `{"status":"OK","database":"connected"}`.
+  - `GET /api/stats` → `{"usuarios":2,"publicaciones":0,...}`.
+
+**Diagnóstico:**
+
+- El backend está correcto y no hay publicaciones en su base de datos; el producto nunca llegó a él.
+- El frontend desplegado en Vercel se compiló **sin `VITE_API_URL`**, porque el archivo `.env` está en `.gitignore` y Vercel no lo recibe. El bundle en vivo (`index-BP3Rp94I.js`) no contenía la URL del backend.
+- Sin URL, `usaMock` quedaba en `true` y todos los datos (registro, sesión, publicaciones) se guardaban en `localStorage` del navegador. Por eso el creador veía su producto, pero los demás usuarios y los anónimos no.
+
+---
+
+## 25. Conexión del frontend al backend por defecto
 
 **Cambios realizados:**
 
-- `src/components/navigation/Navbar.jsx`:
-  - Se añadieron `useNavigate` y `useSearchParams`.
-  - El input quedó controlado por el estado `busqueda`.
-  - El input se sincroniza con el parámetro `?buscar=`.
-  - Se reemplazó el contenedor por un formulario `role="search"` con `onSubmit` y botón `type="submit"`.
-  - Al enviar, navega a `/explorar?buscar=<texto>`; si está vacío, navega a `/explorar`.
-  - Funciona tanto con Enter como con clic en la lupa.
-- `src/pages/Explorar.jsx`:
-  - La búsqueda se deriva de `useSearchParams` con la clave `buscar`.
-  - Al escribir se actualiza la URL con `replace: true`, sin recargar la página.
-  - Se agregó normalización NFD para ignorar tildes y mayúsculas.
-  - La consulta se divide en palabras y se exige que todas aparezcan en el contenido.
-  - Campos buscados: título, categoría, descripción, ubicación, estado y nombre del usuario.
-  - Sin resultados se conserva el mensaje “No se encontraron artículos.”
+- `src/services/api.js` y `src/services/auth.service.js`:
+  - Se agregó `API_URL_DEFECTO = 'https://truex-trade-backend.onrender.com/api'`.
+  - Si `VITE_API_URL` está vacío, ahora se usa esa URL en lugar de activar el modo local.
+  - `usaMock` solo se activa con el placeholder `tu-api-en-la-nube`.
 
-**Pruebas realizadas con Chrome DevTools Protocol:**
+```js
+const API_URL_DEFECTO = 'https://truex-trade-backend.onrender.com/api'
+const API_URL = ((import.meta.env.VITE_API_URL ?? '').trim() || API_URL_DEFECTO).replace(/\/+$/, '')
+const usaMock = API_URL.includes('tu-api-en-la-nube')
+```
 
-- `mando` → 1 resultado (Mando de Xbox Series).
-- `tecnologia` sin tilde → 2 resultados (Mando de Xbox Series e iPhone 18 Pro Max).
-- `mando xbox` → 1 resultado.
-- `zapatos cuero` → 1 resultado.
-- `no-existe-xyz` → 0 resultados y estado vacío visible.
-- Enter, clic en la lupa, sincronización navbar/Explorar y borrado funcionando.
-- Vista móvil 390×844 sin desbordamiento horizontal.
-- `npm run build` correcto.
+**Verificación y despliegue:**
 
-## 26. Credencial 3D (Lanyard) en el registro
+- `npm run build` correcto; el nuevo bundle (`index-4r6GxFeV.js`) ya incluye la URL del backend.
+- Commit `52ea981` — "Conectar frontend al backend por defecto" (2 archivos, +6/−4), subido a `origin/main` (`ca061af..52ea981`).
+- Vercel redesplegó automáticamente: el bundle en vivo (`index-BAnASVue.js`) ya contiene `truex-trade-backend.onrender.com`.
+- `dist/index.html` quedó modificado localmente por el build, sin commitear; no afecta el despliegue de Vercel, que compila desde el código fuente.
 
-**Solicitud:** integrar el componente Lanyard de React Bits (`https://reactbits.dev/components/lanyard`) en `/registro`. La foto de perfil es opcional; antes de subirla debía verse la animación y, al subirla, la credencial debía mostrar la foto del usuario.
+**Pasos para el usuario tras el despliegue:**
 
-**Implementación:**
+1. Recargar con `Ctrl+F5` en `https://truextrade.vercel.app`.
+2. Cerrar sesión y volver a entrar (la sesión mock anterior no es válida en el backend).
+3. Volver a publicar el producto para que se guarde en la base de datos.
 
-- Se instaló la dependencia `three@^0.180.0`.
-- Se añadió `src/components/common/Lanyard.jsx` con el componente de React Bits y su aviso de licencia MIT + Commons Clause de David Haz.
-- Se añadió `src/styles/components/lanyard.css` y se importó desde `src/styles/index.css`.
-- `src/pages/auth/Registro.jsx`:
-  - Carga diferida con `lazy()` y `Suspense`, usando el logo como fallback.
-  - Se sustituyó el avatar circular por una credencial 3D dentro de `.lanyard-stage`.
-  - Sin foto: logo vertical de TrueX con `imageFit="contain"` sobre una tarjeta oscura.
-  - Con foto: el data URL procesado por `procesarAvatar` se usa como `frontImage` y `backImage` con `imageFit="cover"`.
-  - Se mantienen las acciones subir, cambiar y quitar foto.
-  - La credencial se puede arrastrar y voltear; incluye intro y física.
-  - Cinta naranja (`#e8860c`), metal dorado, `size={0.72}` y `strapLength={0.38}`.
-  - El texto de ayuda cambia según si hay foto o no.
-- `src/styles/layouts/auth.css`:
-  - `.lanyard-stage` mide 310 px en escritorio y 270 px en móvil.
-  - Los botones de foto usan ancho automático y el bloque es responsive.
+Los artículos creados en modo local no se migran. Opcionalmente se puede definir `VITE_API_URL` en las variables de entorno de Vercel para dejarlo explícito.
 
-**Ajuste posterior solicitado:** se eliminó el fondo, borde, radio y la etiqueta flotante del contenedor; la animación queda limpia, sin recuadro ni sombra.
+---
 
-**Pruebas realizadas:**
+## 26. Estado actualizado del proyecto (cuarta sesión)
 
-- Escritorio y móvil.
-- Tema claro y oscuro.
-- Subida de imagen: la credencial cambia a la foto y aparecen “Cambiar foto” y “Quitar”.
-- Quitar foto: vuelve al logo y a “Subir foto”.
-- Sin errores de consola y con canvas WebGL renderizado.
-- `npm run build` correcto.
+**Completado:**
 
-## 27. Estado actualizado del proyecto
+- Backend actualizado revisado y verificado (salud, estadísticas, CORS y rutas de items).
+- Causa de la invisibilidad identificada: frontend desplegado en modo local por falta de `VITE_API_URL`.
+- Frontend ahora usa el backend por defecto aunque falte la variable de entorno.
+- Cambio compilado, commiteado (`52ea981`) y desplegado en Vercel; verificado en vivo.
 
-**Completado en esta sesión:**
+**Limitaciones del backend (sin cambios):**
 
-- Buscador del navbar funcional con Enter y botón.
-- Búsqueda de Explorar sincronizada con la URL.
-- Búsqueda sin distinguir mayúsculas/tildes y por múltiples palabras.
-- Credencial 3D Lanyard en el registro con logo de respaldo y foto del usuario.
-- Animación sin fondo/recuadro, responsive y compatible con ambos temas.
-- Build de producción correcto.
+- No existen `POST /auth/change-password`, `POST /auth/forgot-password` ni `POST /auth/reset-password`; esas pantallas muestran el aviso de función no disponible.
+- No existen endpoints de comentarios; el detalle del artículo no puede cargar ni guardar comentarios reales.
 
-**Pendiente / observaciones:**
+**Pendiente:**
 
-- El chunk de Lanyard pesa aproximadamente 540.64 kB (140 kB gzip) porque incluye Three.js; se carga solo al entrar a `/registro`. Vite muestra una advertencia de tamaño (>500 kB). Si se requiere, se puede dividir más o ajustar `chunkSizeWarningLimit`.
-- Sigue pendiente configurar `VITE_API_URL` con la URL real del backend y validar endpoints y compartición de publicaciones.
-- La copia `C:\Users\El Kupis\Documents\proyecto gitgub\TruexTradeFronted\eyects.md` es un historial antiguo y no se actualizó en esta sesión.
+- Que el usuario vuelva a iniciar sesión y publique; luego confirmar que `GET /api/items` y `/api/stats` reflejen la publicación.
+- Verificar la visibilidad desde otro navegador/dispositivo y en modo anónimo.
+- Definir `VITE_API_URL` en Vercel (opcional, ya hay URL por defecto).
