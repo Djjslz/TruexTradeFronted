@@ -630,3 +630,88 @@ npm run preview
 - Verificar los endpoints y el formato de respuesta del backend (auth, items, comentarios).
 - Confirmar que las publicaciones y comentarios se comparten entre usuarios/dispositivos.
 - Documentar/revisar los archivos añadidos fuera de esta sesión (`useContent.js`, `CircularCarousel.jsx`, `SplashCursor.jsx`).
+
+---
+
+# Cuarta sesión — Revisión del backend y conexión del frontend desplegado
+
+> **Fecha de la sesión:** 11 de noviembre de 2026
+> **Asistente:** opencode (modelo deepseek-v4.1-flash-free)
+
+## 24. Publicaciones no visibles para otros usuarios
+
+**Usuario:**
+
+> un usuario ya registrado creó un producto y no es visible para los otros users ni tampoco para los que no se identifican; revisa la versión actualizada del proyecto backend en la raíz del proyecto
+
+**Revisión del backend actualizado:**
+
+Ruta: `C:\Users\David Garcia\Desktop\Truex\truex-trade-backend`
+
+- Repositorio en `main`, limpio y al día con `origin/main` (`f03a6e0`).
+- `GET /api/items` es público: usa `autenticarOpcional`, filtra `activo: true` y devuelve `{ items, total, pagina, paginas }` (12 por página, máximo 50).
+- `POST /api/items` requiere token y responde `{ item }`; `PATCH /api/users/me` actualiza el perfil.
+- CORS permite el origen `https://truextrade.vercel.app` (verificado con `OPTIONS` → 204 y `access-control-allow-origin` correcto).
+- Backend desplegado en Render:
+  - `GET /api/health` → `{"status":"OK","database":"connected"}`.
+  - `GET /api/stats` → `{"usuarios":2,"publicaciones":0,...}`.
+
+**Diagnóstico:**
+
+- El backend está correcto y no hay publicaciones en su base de datos; el producto nunca llegó a él.
+- El frontend desplegado en Vercel se compiló **sin `VITE_API_URL`**, porque el archivo `.env` está en `.gitignore` y Vercel no lo recibe. El bundle en vivo (`index-BP3Rp94I.js`) no contenía la URL del backend.
+- Sin URL, `usaMock` quedaba en `true` y todos los datos (registro, sesión, publicaciones) se guardaban en `localStorage` del navegador. Por eso el creador veía su producto, pero los demás usuarios y los anónimos no.
+
+---
+
+## 25. Conexión del frontend al backend por defecto
+
+**Cambios realizados:**
+
+- `src/services/api.js` y `src/services/auth.service.js`:
+  - Se agregó `API_URL_DEFECTO = 'https://truex-trade-backend.onrender.com/api'`.
+  - Si `VITE_API_URL` está vacío, ahora se usa esa URL en lugar de activar el modo local.
+  - `usaMock` solo se activa con el placeholder `tu-api-en-la-nube`.
+
+```js
+const API_URL_DEFECTO = 'https://truex-trade-backend.onrender.com/api'
+const API_URL = ((import.meta.env.VITE_API_URL ?? '').trim() || API_URL_DEFECTO).replace(/\/+$/, '')
+const usaMock = API_URL.includes('tu-api-en-la-nube')
+```
+
+**Verificación y despliegue:**
+
+- `npm run build` correcto; el nuevo bundle (`index-4r6GxFeV.js`) ya incluye la URL del backend.
+- Commit `52ea981` — "Conectar frontend al backend por defecto" (2 archivos, +6/−4), subido a `origin/main` (`ca061af..52ea981`).
+- Vercel redesplegó automáticamente: el bundle en vivo (`index-BAnASVue.js`) ya contiene `truex-trade-backend.onrender.com`.
+- `dist/index.html` quedó modificado localmente por el build, sin commitear; no afecta el despliegue de Vercel, que compila desde el código fuente.
+
+**Pasos para el usuario tras el despliegue:**
+
+1. Recargar con `Ctrl+F5` en `https://truextrade.vercel.app`.
+2. Cerrar sesión y volver a entrar (la sesión mock anterior no es válida en el backend).
+3. Volver a publicar el producto para que se guarde en la base de datos.
+
+Los artículos creados en modo local no se migran. Opcionalmente se puede definir `VITE_API_URL` en las variables de entorno de Vercel para dejarlo explícito.
+
+---
+
+## 26. Estado actualizado del proyecto (cuarta sesión)
+
+**Completado:**
+
+- Backend actualizado revisado y verificado (salud, estadísticas, CORS y rutas de items).
+- Causa de la invisibilidad identificada: frontend desplegado en modo local por falta de `VITE_API_URL`.
+- Frontend ahora usa el backend por defecto aunque falte la variable de entorno.
+- Cambio compilado, commiteado (`52ea981`) y desplegado en Vercel; verificado en vivo.
+
+**Limitaciones del backend (sin cambios):**
+
+- No existen `POST /auth/change-password`, `POST /auth/forgot-password` ni `POST /auth/reset-password`; esas pantallas muestran el aviso de función no disponible.
+- No existen endpoints de comentarios; el detalle del artículo no puede cargar ni guardar comentarios reales.
+
+**Pendiente:**
+
+- Que el usuario vuelva a iniciar sesión y publique; luego confirmar que `GET /api/items` y `/api/stats` reflejen la publicación.
+- Verificar la visibilidad desde otro navegador/dispositivo y en modo anónimo.
+- Definir `VITE_API_URL` en Vercel (opcional, ya hay URL por defecto).
