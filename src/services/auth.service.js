@@ -1,5 +1,6 @@
-const API_URL = (import.meta.env.VITE_API_URL ?? '').trim()
-const usaMock = !API_URL || API_URL.includes('tu-api-en-la-nube')
+const API_URL_DEFECTO = 'https://truex-trade-backend.onrender.com/api'
+const API_URL = ((import.meta.env.VITE_API_URL ?? '').trim() || API_URL_DEFECTO).replace(/\/+$/, '')
+const usaMock = API_URL.includes('tu-api-en-la-nube')
 const USUARIOS_KEY = 'truex-usuarios'
 
 function leerUsuarios() {
