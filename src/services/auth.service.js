@@ -84,6 +84,16 @@ function normalizarSesion(datos) {
 async function leerError(respuesta, porDefecto) {
   try {
     const datos = await respuesta.json()
+
+    if (respuesta.status === 404) {
+      return 'Esta función aún no está disponible en el servidor.'
+    }
+
+    if (datos.errores && typeof datos.errores === 'object') {
+      const mensajes = Object.values(datos.errores).filter(Boolean)
+      if (mensajes.length > 0) return mensajes[0]
+    }
+
     return datos.mensaje ?? datos.message ?? datos.error ?? porDefecto
   } catch (error) {
     return porDefecto
@@ -286,7 +296,7 @@ export async function actualizarPerfil(datos, token) {
     return normalizarUsuario(actualizado)
   }
 
-  const respuesta = await fetch(`${API_URL}/auth/me`, {
+  const respuesta = await fetch(`${API_URL}/users/me`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
